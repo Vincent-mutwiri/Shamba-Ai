@@ -16,7 +16,7 @@ interface AnalysisResult {
 }
 
 export const DiseaseDetection = () => {
-  // Initialize Gemini API
+  // Initialize Inflection AI
   const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
   const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
   
@@ -106,7 +106,7 @@ export const DiseaseDetection = () => {
       
       if (error instanceof Error) {
         if (error.message.includes("API_KEY")) {
-          errorMessage = "Invalid API key. Please check your Gemini API configuration.";
+          errorMessage = "Invalid API key. Please check your Inflection API configuration.";
         } else if (error.message.includes("quota")) {
           errorMessage = "API quota exceeded. Please try again later.";
         } else if (error.message.includes("network")) {

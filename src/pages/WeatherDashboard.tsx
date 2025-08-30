@@ -43,63 +43,65 @@ export const WeatherDashboard = () => {
     };
   }, [selectedLocation]);
   
-  // Generate farming insights based on weather conditions
-  const getFarmingInsights = useCallback(() => {
-    const locationName = selectedLocation || 'your area';
-    const temp = weatherData.current.temperature;
-    const condition = weatherData.current.condition;
-    const humidity = weatherData.current.humidity;
-    const wind = weatherData.current.windSpeed;
+  // Generate farming insights using Inflection AI
+  const getFarmingInsights = useCallback(async () => {
+    setLoading(true);
+    setInsightError("");
     
-    let activities = [];
-    let precautions = [];
-    let irrigation = [];
-    let risks = [];
-    
-    // Temperature-based advice
-    if (temp > 30) {
-      activities.push('Early morning or late evening farming activities');
-      precautions.push('Protect workers from heat stress');
-      irrigation.push('Increase watering frequency');
-    } else if (temp < 18) {
-      activities.push('Midday farming when temperatures are warmer');
-      precautions.push('Protect sensitive crops from cold');
-      irrigation.push('Reduce watering to prevent root rot');
-    } else {
-      activities.push('Optimal conditions for most farming activities');
-      irrigation.push('Maintain regular watering schedule');
+    try {
+      const locationName = selectedLocation || 'Kenya';
+      const prompt = `Agricultural advice for ${locationName}, Kenya. Current weather: ${weatherData.current.temperature}°C, ${weatherData.current.condition}, humidity ${weatherData.current.humidity}%. Provide farming recommendations in 150 words with activities, precautions, and irrigation advice.`;
+      
+      const response = await fetch(INFLECTION_API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${INFLECTION_API_KEY}`
+        },
+        body: JSON.stringify({
+          context: [{
+            text: prompt,
+            type: 'Human'
+          }],
+          config: 'Pi-3.1'
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API failed: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const text = data.text || data.response;
+      
+      if (text) {
+        setFarmingInsight(text);
+      } else {
+        throw new Error('No response');
+      }
+    } catch (error) {
+      console.error('Error getting insights:', error);
+      // Fallback to static advice
+      const locationName = selectedLocation || 'your area';
+      const temp = weatherData.current.temperature;
+      const condition = weatherData.current.condition;
+      const humidity = weatherData.current.humidity;
+      
+      let advice = `**Weather-Based Farming Advice for ${locationName}:**\n\n**Current Conditions:** ${temp}°C, ${condition}, ${humidity}% humidity\n\n`;
+      
+      if (temp > 30) {
+        advice += `**Recommended Activities:**\n• Early morning or evening farming\n• Harvest before peak heat\n\n**Irrigation:**\n• Increase watering frequency\n• Water early morning or late evening`;
+      } else if (temp < 18) {
+        advice += `**Recommended Activities:**\n• Midday farming when warmer\n• Plant cold-resistant varieties\n\n**Precautions:**\n• Protect crops from frost\n• Use mulching for warmth`;
+      } else {
+        advice += `**Recommended Activities:**\n• Optimal conditions for planting\n• Good time for field preparation\n\n**General Advice:**\n• Excellent weather for farming`;
+      }
+      
+      setFarmingInsight(advice);
+    } finally {
+      setLoading(false);
     }
-    
-    // Condition-based advice
-    if (condition.toLowerCase().includes('rain')) {
-      activities.push('Harvest mature crops before heavy rains');
-      precautions.push('Ensure proper drainage in fields');
-      irrigation.push('Reduce or stop irrigation');
-      risks.push('Fungal diseases due to high moisture');
-    } else if (condition.toLowerCase().includes('sunny')) {
-      activities.push('Ideal for drying harvested crops');
-      irrigation.push('Monitor soil moisture closely');
-    }
-    
-    // Humidity-based advice
-    if (humidity > 80) {
-      risks.push('High disease pressure from humidity');
-      precautions.push('Improve air circulation around crops');
-    } else if (humidity < 50) {
-      irrigation.push('Increase watering due to low humidity');
-      precautions.push('Mulch to retain soil moisture');
-    }
-    
-    // Wind-based advice
-    if (wind > 20) {
-      precautions.push('Avoid spraying pesticides in high winds');
-      precautions.push('Stake tall crops to prevent damage');
-    }
-    
-    const insight = `**Weather-Based Farming Advice for ${locationName}:**\n\n**Current Conditions:** ${temp}°C, ${condition}, ${humidity}% humidity, ${wind} km/h wind\n\n**Recommended Activities:**\n${activities.map(a => `• ${a}`).join('\n')}\n\n**Precautions:**\n${precautions.map(p => `• ${p}`).join('\n')}\n\n**Irrigation Advice:**\n${irrigation.map(i => `• ${i}`).join('\n')}${risks.length > 0 ? `\n\n**Pest & Disease Risks:**\n${risks.map(r => `• ${r}`).join('\n')}` : ''}`;
-    
-    setFarmingInsight(insight);
-  }, [selectedLocation, weatherData]);
+  }, [selectedLocation, weatherData, INFLECTION_API_KEY]);
   
   // Get insights on load and location change
   useEffect(() => {
