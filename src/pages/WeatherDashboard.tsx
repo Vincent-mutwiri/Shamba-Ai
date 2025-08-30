@@ -5,8 +5,6 @@ import { ThermometerSun, Wind, Droplets, Sun, CloudRain, Clock, AlertTriangle } 
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage } from "@/components/FormattedMessage";
-import { CountySelector } from "@/components/CountySelector";
-import { getWeatherByLocation } from "@/data/complete-weather-data";
 
 export const WeatherDashboard = () => {
   const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
@@ -45,54 +43,78 @@ export const WeatherDashboard = () => {
   
   // Generate farming insights using Inflection AI
   const getFarmingInsights = useCallback(async () => {
+    if (loading) return;
+    
     setLoading(true);
     setInsightError("");
     
     try {
-      const locationName = selectedLocation || 'Kenya';
-      const prompt = `Agricultural advice for ${locationName}, Kenya. Current weather: ${weatherData.current.temperature}°C, ${weatherData.current.condition}, humidity ${weatherData.current.humidity}%. Provide farming recommendations in 150 words with activities, precautions, and irrigation advice.`;
-      
-      const response = await fetch(INFLECTION_API_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${INFLECTION_API_KEY}`
-        },
-        body: JSON.stringify({
-          context: [{
-            text: prompt,
-            type: 'Human'
-          }],
-          config: 'Pi-3.1'
-        })
-      });
-      
-      if (!response.ok) {
-        throw new Error(`API failed: ${response.status}`);
+      if (!genAI) {
+        setInsightError("AI service is not properly configured. Please check your API key.");
+        return;
       }
+
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
-      const data = await response.json();
-      const text = data.text || data.response;
+      const weatherSummary = `
+        Current weather in Nakuru: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
+        Humidity: ${weatherData.current.humidity}%
+        Wind Speed: ${weatherData.current.windSpeed} km/h
+        Precipitation: ${weatherData.current.precipitation} mm
+        
+        5-Day Forecast:
+        - Today: ${weatherData.forecast[0].temp}°C
+        - Tomorrow: ${weatherData.forecast[1].temp}°C
+        - Wednesday: ${weatherData.forecast[2].temp}°C
+        - Thursday: ${weatherData.forecast[3].temp}°C
+        - Friday: ${weatherData.forecast[4].temp}°C
+      `;
       
-      if (text) {
-        setFarmingInsight(text);
-      } else {
-        throw new Error('No response');
-      }
-    } catch (error) {
-      console.error('Error getting insights:', error);
-      // Fallback to static advice
-      const locationName = selectedLocation || 'your area';
-      const temp = weatherData.current.temperature;
-      const condition = weatherData.current.condition;
-      const humidity = weatherData.current.humidity;
+      const prompt = `
+        You are an agricultural weather expert for Nakuru County, Kenya. 
+        
+        **Format your response with clear structure using:**
+        - Headings followed by colons (e.g., "Recommended Activities:")
+        - Bullet points (•) for lists
+        - Numbered steps for sequential actions
+        
+        Based on the following weather data for Nakuru, provide practical farming advice:
+        
+        ${weatherSummary}
+        
+        **Provide specific recommendations about:**
+        
+        **Recommended Activities:**
+        - What farming activities are optimal in these conditions
+        
+        **Precautions:**
+        - Any safety measures farmers should take
+        
+        **Irrigation Advice:**
+        - Optimal watering schedule given the forecast
+        
+        **Pest & Disease Risks:**
+        - Potential threats that might increase in these conditions
+        
+        Keep response under 200 words, practical, and specific to Nakuru's agricultural context.
+      `;
       
-      let advice = `**Weather-Based Farming Advice for ${locationName}:**\n\n**Current Conditions:** ${temp}°C, ${condition}, ${humidity}% humidity\n\n`;
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
       
-      if (temp > 30) {
-        advice += `**Recommended Activities:**\n• Early morning or evening farming\n• Harvest before peak heat\n\n**Irrigation:**\n• Increase watering frequency\n• Water early morning or late evening`;
-      } else if (temp < 18) {
-        advice += `**Recommended Activities:**\n• Midday farming when warmer\n• Plant cold-resistant varieties\n\n**Precautions:**\n• Protect crops from frost\n• Use mulching for warmth`;
+      console.log("Weather AI Response:", text);
+      setFarmingInsight(text);
+    } catch (error: any) {
+      console.error("Error getting farming insights:", error);
+      
+      // Handle specific error types
+      if (error?.message?.includes('API_KEY_INVALID')) {
+        setInsightError("Invalid API key. Please check your configuration.");
+      } else if (error?.message?.includes('QUOTA_EXCEEDED')) {
+        setInsightError("AI service quota exceeded. Please try again later.");
+      } else if (error?.message?.includes('fetch')) {
+        setInsightError("Network error. Please check your internet connection.");
       } else {
         advice += `**Recommended Activities:**\n• Optimal conditions for planting\n• Good time for field preparation\n\n**General Advice:**\n• Excellent weather for farming`;
       }
@@ -101,14 +123,12 @@ export const WeatherDashboard = () => {
     } finally {
       setLoading(false);
     }
-  }, [selectedLocation, weatherData, INFLECTION_API_KEY]);
+  }, [genAI, weatherData]);
   
-  // Get insights on load and location change
+  // Get insights on initial load
   useEffect(() => {
     getFarmingInsights();
   }, [getFarmingInsights]);
-
-
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -395,7 +415,7 @@ export const WeatherDashboard = () => {
             <div className="h-16 sm:h-24 flex items-center justify-center">
               <div className="text-xs sm:text-sm text-gray-500">Generating farming insights...</div>
             </div>
-          ) : (
+          ) : farmingInsight ? (
             <>
               <div className="prose prose-sm max-w-none">
                 <FormattedMessage 
@@ -409,12 +429,23 @@ export const WeatherDashboard = () => {
                   size="sm"
                   onClick={getFarmingInsights}
                   disabled={loading}
-                  className="text-green-600 border-green-600 hover:bg-green-50 text-xs sm:text-sm"
+                  className="text-green-600 border-green-600 hover:bg-green-50 text-xs sm:text-sm disabled:opacity-50"
                 >
                   {loading ? "Updating..." : "Update Insights"}
                 </Button>
               </div>
             </>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">Click below to get AI-powered farming insights based on current weather conditions.</p>
+              <Button 
+                onClick={getFarmingInsights}
+                disabled={loading}
+                className="bg-green-600 hover:bg-green-700 text-white disabled:opacity-50"
+              >
+                {loading ? "Loading..." : "Get Farming Insights"}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>

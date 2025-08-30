@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Upload, AlertTriangle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { geminiRateLimiter } from "@/utils/rateLimiter";
 import { DiseaseDetailsCard } from "./DiseaseDetailsCard";
 
 interface AnalysisResult {
@@ -60,56 +61,91 @@ export const DiseaseDetection = () => {
     setIsAnalyzing(true);
     
     try {
-      // Convert image to base64 for API
-      const base64Image = selectedImage.split(',')[1];
+      // Get the generative model with vision capability
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
-      const prompt = `Analyze this crop image for diseases, pests, and health issues. Provide:
-1. Disease/condition name
-2. Confidence percentage (0-100)
-3. Severity level (None/Low/Medium/High)
-4. Detailed description of what you see
-5. Treatment recommendations
-6. Prevention measures
-
-Focus on Kenyan crops like maize, beans, potatoes, tea, coffee. Be specific about visual symptoms you observe.`;
+      // Convert base64 image to correct format for Gemini API
+      const base64String = selectedImage.split(',')[1];
+      const mimeType = selectedImage.split(',')[0].split(':')[1].split(';')[0];
       
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Create image part for the model
+      const imageParts = [
+        {
+          inlineData: {
+            data: base64String,
+            mimeType: mimeType,
+          },
         },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt },
-              {
-                inline_data: {
-                  mime_type: "image/jpeg",
-                  data: base64Image
-                }
-              }
-            ]
-          }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 1000
-          }
-        })
-      });
+      ];
       
-      if (!response.ok) {
-        throw new Error(`Gemini Vision API failed: ${response.status}`);
+      // Create prompt for plant disease analysis
+      const prompt = `
+      You are an expert agricultural pathologist specializing in crop diseases in Kenya, particularly the Nakuru region.
+      
+      Analyze this crop image and provide a detailed assessment in the following JSON format:
+      
+      {
+        "disease": "Disease/Pest Name (if any)",
+        "confidence": 85,
+        "severity": "Low/Medium/High/None",
+        "description": "Detailed description of what you observe",
+        "treatment": "Specific treatment recommendations for Kenya",
+        "prevention": "Prevention strategies for Nakuru farmers"
       }
       
-      const data = await response.json();
-      const analysisText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      Important guidelines:
+      - If the plant appears healthy, set disease to "Healthy Plant" and severity to "None"
+      - Use confidence levels from 0-100
+      - Provide practical, locally-relevant advice for Kenyan farmers
+      - Mention specific products or practices available in Kenya when possible
+      - Consider common crops in Nakuru: maize, beans, potatoes, wheat, barley
       
-      if (!analysisText) {
-        throw new Error('No analysis from Gemini Vision');
+      Return ONLY the JSON object, no additional text.
+      `;
+      
+      // Generate content with the image
+      const result = await geminiRateLimiter.execute(() => model.generateContent([prompt, ...imageParts]));
+      const response = await result.response;
+      const text = response.text();
+      
+      console.log("AI Response:", text); // For debugging
+      
+      // Parse the JSON response
+      let parsedResult: AnalysisResult;
+      
+      try {
+        // Clean the response text (remove any markdown formatting)
+        const cleanText = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+        const jsonResponse = JSON.parse(cleanText);
+        
+        parsedResult = {
+          disease: jsonResponse.disease || "Unknown Issue",
+          confidence: jsonResponse.confidence || 70,
+          severity: jsonResponse.severity || "Medium",
+          description: jsonResponse.description || "Analysis could not determine the specific issue.",
+          treatment: jsonResponse.treatment || "Consult with a local agricultural extension officer for specific recommendations.",
+          prevention: jsonResponse.prevention || "Regular monitoring and proper farm hygiene practices."
+        };
+      } catch (parseError) {
+        console.error("Error parsing AI response:", parseError);
+        console.log("Raw response:", text);
+        
+        // Fallback: Try to extract information using regex if JSON parsing fails
+        const diseaseName = text.match(/disease[\"']?\s*:\s*[\"']?([^\"',\n]+)/i)?.[1] || "Analysis Inconclusive";
+        const confidenceMatch = text.match(/confidence[\"']?\s*:\s*(\d+)/i);
+        const confidence = confidenceMatch ? parseInt(confidenceMatch[1]) : 70;
+        const severityMatch = text.match(/severity[\"']?\s*:\s*[\"']?(none|low|medium|high)[\"']?/i);
+        const severity = severityMatch ? severityMatch[1].charAt(0).toUpperCase() + severityMatch[1].slice(1) : "Medium";
+        
+        parsedResult = {
+          disease: diseaseName,
+          confidence: confidence,
+          severity: severity,
+          description: "The AI analysis provided an unclear response. Please try uploading a clearer image or consult with an agricultural expert.",
+          treatment: "Consider taking a clearer photo with better lighting, or consult with a local agricultural extension officer.",
+          prevention: "Regular crop monitoring and maintaining good farm hygiene practices."
+        };
       }
-      
-      // Parse the response to extract structured data
-      const parsedResult = parseAnalysisResponse(analysisText);
       
       setAnalysisResult(parsedResult);
       

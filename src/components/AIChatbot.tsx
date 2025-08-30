@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 
 import { FormattedMessage } from './FormattedMessage';
 import { createStructuredPrompt } from '@/lib/chatFormat';
+import { geminiRateLimiter } from '@/utils/rateLimiter';
 
 // Constants
 const MODEL_NAME = 'gemini-1.5-flash';  // Using stable model
@@ -140,7 +141,7 @@ I'm here to help you with:
       console.log("Sending prompt to Gemini:", parts[0]); // For debugging
       
       const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-      const result = await model.generateContent(parts);
+      const result = await geminiRateLimiter.execute(() => model.generateContent(parts));
       const response = result.response;
       const responseText = response.text();
       

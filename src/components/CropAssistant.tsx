@@ -5,7 +5,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Bot, User, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { FormattedMessage } from "./FormattedMessage";
 import { createStructuredPrompt } from "@/lib/chatFormat";
 
@@ -169,22 +172,47 @@ I'm here to help you with farming across Kenya. I can assist with:
     }
   };
 
-  const generateStaticResponse = (question: string): string => {
-    const q = question.toLowerCase();
-    
-    if (q.includes('sisal')) {
-      return `**Sisal Farming in Kenya:**\n\n**Growing Conditions:**\n• Thrives in semi-arid areas (500-1000mm rainfall)\n• Well-drained soils, pH 6.0-7.5\n• Coastal and Eastern regions ideal\n\n**Planting:**\n• Use suckers or bulbils\n• Plant spacing: 2m x 3m (1,650 plants/hectare)\n• Best planting: start of rains\n\n**Management:**\n• First harvest after 4-5 years\n• Harvest every 6-8 months\n• Remove flower stalks to maintain fiber quality\n\n**Market:**\n• High demand for rope, twine, carpets\n• Export potential to Europe, Asia\n• Current price: KSh 15-25 per kg`;
+  const generateGeminiResponse = async (question: string): Promise<string> => {
+    if (!genAI) {
+      throw new Error("Gemini API not initialized");
     }
-    
-    if (q.includes('fertilizer') || q.includes('manure')) {
-      return `**Fertilizer Recommendations for Kenya:**\n\n**For Maize:**\n• NPK 17:17:17 during planting\n• CAN (Calcium Ammonium Nitrate) for top dressing\n• DAP (Diammonium Phosphate) for phosphorus\n\n**For Vegetables:**\n• NPK 20:20:20 for balanced nutrition\n• Organic compost for soil health\n• Foliar feeds for quick nutrient uptake\n\n**Application Tips:**\n• Apply fertilizer 2-3 weeks after planting\n• Water immediately after application\n• Follow soil test recommendations\n\n**Organic Options:**\n• Well-decomposed farmyard manure\n• Compost from kitchen waste\n• Green manure from legumes`;
+
+    try {
+      // Get the generative model (using stable version)
+      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      
+      // Create a structured prompt using the utility function
+      const prompt = createStructuredPrompt(question, isMobile);
+      
+      console.log("Sending prompt to Gemini:", prompt); // For debugging
+      
+      // Generate content using Gemini API
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      console.log("Gemini response:", text); // For debugging
+      
+      if (!text || text.trim().length === 0) {
+        throw new Error("Empty response from Gemini API");
+      }
+      
+      return text;
+    } catch (error) {
+      console.error("Error calling Gemini API:", error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes("API_KEY")) {
+          throw new Error("Invalid Gemini API key");
+        } else if (error.message.includes("quota")) {
+          throw new Error("API quota exceeded");
+        } else if (error.message.includes("network")) {
+          throw new Error("Network error occurred");
+        }
+      }
+      
+      throw new Error("Failed to generate response from Gemini API");
     }
-    
-    if (q.includes('pest') || q.includes('disease') || q.includes('armyworm')) {
-      return `**Pest & Disease Management:**\n\n**Common Pests:**\n• Fall Armyworm - Use Bt sprays or neem oil\n• Aphids - Spray with soapy water\n• Cutworms - Use collar barriers around plants\n\n**Disease Control:**\n• Fungal diseases - Apply copper-based fungicides\n• Bacterial wilt - Use resistant varieties\n• Viral diseases - Control vector insects\n\n**Prevention:**\n• Crop rotation every season\n• Remove infected plant debris\n• Use certified disease-free seeds\n• Maintain proper plant spacing`;
-    }
-    
-    return `**General Farming Advice:**\n\nI couldn't find a specific answer for your query. Here's some general advice:\n\n**Crop Selection:**\n• Choose climate-suited varieties\n• Consider market demand\n• Use certified seeds\n\n**Soil Management:**\n• Test soil annually\n• Add organic matter\n• Practice conservation agriculture\n\nCould you please ask about a specific crop or farming problem?`;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
