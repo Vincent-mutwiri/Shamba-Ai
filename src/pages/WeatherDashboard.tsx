@@ -40,84 +40,105 @@ export const WeatherDashboard = () => {
     ],
   };
   
-  // Get farming insights based on weather data using Gemini API
+  // Rate limiting helper
+  const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+  
+  // Get farming insights with retry logic for rate limiting
   const getFarmingInsights = useCallback(async () => {
     setLoading(true);
     setInsightError("");
     
-    try {
-      if (!genAI) {
-        setInsightError("AI service is not properly configured. Please check your API key.");
-        return;
-      }
+    const maxRetries = 3;
+    let retryCount = 0;
+    
+    while (retryCount < maxRetries) {
+      try {
+        if (!genAI) {
+          setInsightError("AI service is not properly configured. Please check your API key.");
+          return;
+        }
 
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      const weatherSummary = `
-        Current weather in Nakuru: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
-        Humidity: ${weatherData.current.humidity}%
-        Wind Speed: ${weatherData.current.windSpeed} km/h
-        Precipitation: ${weatherData.current.precipitation} mm
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         
-        5-Day Forecast:
-        - Today: ${weatherData.forecast[0].temp}°C
-        - Tomorrow: ${weatherData.forecast[1].temp}°C
-        - Wednesday: ${weatherData.forecast[2].temp}°C
-        - Thursday: ${weatherData.forecast[3].temp}°C
-        - Friday: ${weatherData.forecast[4].temp}°C
-      `;
-      
-      const prompt = `
-        You are an agricultural weather expert for Nakuru County, Kenya. 
+        const weatherSummary = `
+          Current weather in Nakuru: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
+          Humidity: ${weatherData.current.humidity}%
+          Wind Speed: ${weatherData.current.windSpeed} km/h
+          Precipitation: ${weatherData.current.precipitation} mm
+          
+          5-Day Forecast:
+          - Today: ${weatherData.forecast[0].temp}°C
+          - Tomorrow: ${weatherData.forecast[1].temp}°C
+          - Wednesday: ${weatherData.forecast[2].temp}°C
+          - Thursday: ${weatherData.forecast[3].temp}°C
+          - Friday: ${weatherData.forecast[4].temp}°C
+        `;
         
-        **Format your response with clear structure using:**
-        - Headings followed by colons (e.g., "Recommended Activities:")
-        - Bullet points (•) for lists
-        - Numbered steps for sequential actions
+        const prompt = `
+          You are an agricultural weather expert for Nakuru County, Kenya. 
+          
+          **Format your response with clear structure using:**
+          - Headings followed by colons (e.g., "Recommended Activities:")
+          - Bullet points (•) for lists
+          - Numbered steps for sequential actions
+          
+          Based on the following weather data for Nakuru, provide practical farming advice:
+          
+          ${weatherSummary}
+          
+          **Provide specific recommendations about:**
+          
+          **Recommended Activities:**
+          - What farming activities are optimal in these conditions
+          
+          **Precautions:**
+          - Any safety measures farmers should take
+          
+          **Irrigation Advice:**
+          - Optimal watering schedule given the forecast
+          
+          **Pest & Disease Risks:**
+          - Potential threats that might increase in these conditions
+          
+          Keep response under 200 words, practical, and specific to Nakuru's agricultural context.
+        `;
         
-        Based on the following weather data for Nakuru, provide practical farming advice:
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
         
-        ${weatherSummary}
+        console.log("Weather AI Response:", text);
+        setFarmingInsight(text);
+        return; // Success, exit retry loop
         
-        **Provide specific recommendations about:**
+      } catch (error: any) {
+        console.error(`Error getting farming insights (attempt ${retryCount + 1}):`, error);
         
-        **Recommended Activities:**
-        - What farming activities are optimal in these conditions
-        
-        **Precautions:**
-        - Any safety measures farmers should take
-        
-        **Irrigation Advice:**
-        - Optimal watering schedule given the forecast
-        
-        **Pest & Disease Risks:**
-        - Potential threats that might increase in these conditions
-        
-        Keep response under 200 words, practical, and specific to Nakuru's agricultural context.
-      `;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      console.log("Weather AI Response:", text);
-      setFarmingInsight(text);
-    } catch (error: any) {
-      console.error("Error getting farming insights:", error);
-      
-      // Handle specific error types
-      if (error?.message?.includes('API_KEY_INVALID')) {
-        setInsightError("Invalid API key. Please check your configuration.");
-      } else if (error?.message?.includes('QUOTA_EXCEEDED')) {
-        setInsightError("AI service quota exceeded. Please try again later.");
-      } else if (error?.message?.includes('fetch')) {
-        setInsightError("Network error. Please check your internet connection.");
-      } else {
-        setInsightError("Failed to generate farming insights. Please try again later.");
+        // Check if it's a rate limit error (429)
+        if (error?.status === 429 || error?.message?.includes('429') || error?.message?.includes('Too Many Requests')) {
+          retryCount++;
+          if (retryCount < maxRetries) {
+            const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
+            console.log(`Rate limited. Retrying in ${waitTime/1000} seconds...`);
+            await delay(waitTime);
+            continue;
+          } else {
+            setInsightError("Rate limit exceeded. Please wait a few minutes before trying again.");
+          }
+        } else if (error?.message?.includes('API_KEY_INVALID')) {
+          setInsightError("Invalid API key. Please check your configuration.");
+        } else if (error?.message?.includes('QUOTA_EXCEEDED')) {
+          setInsightError("AI service quota exceeded. Please try again later.");
+        } else if (error?.message?.includes('fetch')) {
+          setInsightError("Network error. Please check your internet connection.");
+        } else {
+          setInsightError("Failed to generate farming insights. Please try again later.");
+        }
+        break; // Exit retry loop for non-rate-limit errors
       }
-    } finally {
-      setLoading(false);
     }
+    
+    setLoading(false);
   }, [genAI, weatherData]);
   
   // Get insights on initial load

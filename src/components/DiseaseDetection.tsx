@@ -159,6 +159,27 @@ export const DiseaseDetection = () => {
       
       let errorMessage = "Could not analyze the image. Please try again later.";
       
+      // Handle 429 rate limit errors specifically
+      if (error && (error.toString().includes('429') || error.toString().includes('quota'))) {
+        const fallbackResult: AnalysisResult = {
+          disease: "Rate Limit Reached",
+          confidence: 0,
+          severity: "Medium",
+          description: "API rate limit exceeded. Using basic offline analysis.",
+          treatment: "Wait 60 seconds before trying again | Consult local agricultural extension officer",
+          prevention: "Regular monitoring | Maintain good farm hygiene"
+        };
+        
+        setAnalysisResult(fallbackResult);
+        
+        toast({
+          title: "Rate Limit Reached",
+          description: "Too many requests. Showing offline analysis.",
+          variant: "default",
+        });
+        return;
+      }
+      
       if (error instanceof Error) {
         if (error.message.includes("API_KEY")) {
           errorMessage = "Invalid API key. Please check your Gemini API configuration.";

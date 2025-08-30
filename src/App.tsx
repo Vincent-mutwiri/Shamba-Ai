@@ -17,10 +17,12 @@ import { MarketDashboard } from "@/components/MarketDashboard";
 import DiseaseDetectionPage from "./pages/DiseaseDetectionPage";
 import NotificationsPage from "./pages/NotificationsPage";
 import OfflinePage from "./pages/OfflinePage";
+import CommunityPage from "./pages/CommunityPage";
 import { WeatherDashboard } from "@/pages/WeatherDashboard";
 import { Settings } from "@/pages/Settings";
 import { ProfilePage } from "@/pages/ProfilePage";
 import Help from "@/pages/Help";
+import { DashboardLayout } from "@/components/DashboardLayout";
 import FeatureDetail from "./pages/FeatureDetail";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
@@ -64,6 +66,7 @@ const App = () => (
               <Route path="disease-detection" element={<DiseaseDetectionPage />} />
               <Route path="notifications" element={<NotificationsPage />} />
               <Route path="offline" element={<OfflinePage />} />
+              <Route path="community" element={<CommunityPage />} />
               <Route path="weather" element={<WeatherDashboard />} />
               <Route path="market" element={<MarketDashboard />} />
               <Route path="settings" element={<Settings />} />

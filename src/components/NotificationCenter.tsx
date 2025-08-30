@@ -98,7 +98,7 @@ export const NotificationCenter = () => {
       const marketUpdates = ['Price Increase', 'New Buyer Available', 'Market Day Reminder'];
       const seasonalReminders = ['Planting Time', 'Harvest Season', 'Fertilizer Application'];
       
-      if (Math.random() > 0.95) { // 5% chance every interval
+      if (Math.random() > 0.8) { // 20% chance every interval
         const types = ['weather', 'market', 'seasonal'] as const;
         const type = types[Math.floor(Math.random() * types.length)];
         
@@ -134,7 +134,7 @@ export const NotificationCenter = () => {
           setNotifications(prev => [newNotification, ...prev]);
         }
       }
-    }, 10000); // Check every 10 seconds
+    }, 5000); // Check every 5 seconds
     
     return () => clearInterval(interval);
   }, [settings]);

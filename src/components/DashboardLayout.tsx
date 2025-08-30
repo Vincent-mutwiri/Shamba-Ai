@@ -23,6 +23,7 @@ import {
   PhoneCall,
   Zap,
   WifiOff,
+  Users,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,6 +55,7 @@ const sidebarItems = [
   { label: "Disease Detection", icon: Scan, path: "/dashboard/disease-detection" },
   { label: "Notifications", icon: Bell, path: "/dashboard/notifications" },
   { label: "Offline Mode", icon: WifiOff, path: "/dashboard/offline" },
+  { label: "Community", icon: Users, path: "/dashboard/community" },
   { label: "Weather", icon: Cloud, path: "/dashboard/weather" },
   { label: "Market Prices", icon: TrendingUp, path: "/dashboard/market" },
   { label: "Help & Resources", icon: HelpCircle, path: "/dashboard/help" },

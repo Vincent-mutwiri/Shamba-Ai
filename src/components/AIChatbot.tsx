@@ -165,8 +165,8 @@ I'm here to help you with:
       if (error instanceof Error) {
         if (error.message.includes("API_KEY")) {
           errorContent = 'Invalid API key. Please check your Gemini API configuration.';
-        } else if (error.message.includes("quota")) {
-          errorContent = 'API quota exceeded. Please try again later.';
+        } else if (error.message.includes("quota") || error.toString().includes('429')) {
+          errorContent = 'API rate limit exceeded. Please wait 60 seconds before trying again.';
         } else if (error.message.includes("network")) {
           errorContent = 'Network error. Please check your internet connection.';
         }
