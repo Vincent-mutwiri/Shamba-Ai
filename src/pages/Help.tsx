@@ -54,10 +54,12 @@ export const Help = () => {
                 <p className="text-xs text-gray-400">Duration: 5 minutes</p>
               </CardContent>
               <CardFooter>
+                <a href="https://drive.google.com/file/d/1TcBG_iYsFhg5GDopLYCwl3twI5sxEUtw/view">
                 <Button variant="outline" className="w-full">
                   Watch Video
                   <ExternalLink className="h-3 w-3 ml-1" />
                 </Button>
+                </a>
               </CardFooter>
             </Card>
 
@@ -79,10 +81,12 @@ export const Help = () => {
                 <p className="text-xs text-gray-400">Updated: May 25, 2025</p>
               </CardContent>
               <CardFooter>
+                <a href="https://drive.google.com/file/d/1nwNp6Qyjp1xy-X7HfhqbyxUBreWbBVry/view?usp=sharing">
                 <Button variant="outline" className="w-full">
                   View Guide
                   <ExternalLink className="h-3 w-3 ml-1" />
                 </Button>
+                </a>
               </CardFooter>
             </Card>
 
@@ -104,10 +108,12 @@ export const Help = () => {
                 <p className="text-xs text-gray-400">Duration: 3 minutes</p>
               </CardContent>
               <CardFooter>
+                <a href="https://drive.google.com/file/d/18DKhpc1dgk23H4ZE-E15cuEd7Tvoyuwq/view?usp=sharing">
                 <Button variant="outline" className="w-full">
-                  Watch Video
+                  View Guide
                   <ExternalLink className="h-3 w-3 ml-1" />
                 </Button>
+                </a>
               </CardFooter>
             </Card>
 
@@ -129,10 +135,16 @@ export const Help = () => {
                 <p className="text-xs text-gray-400">Updated: May 28, 2025</p>
               </CardContent>
               <CardFooter>
+
+              <a href="https://drive.google.com/file/d/14PTvhyk1L3QcYYEA-6cu2gXz29tZwOZW/view?usp=sharing">
                 <Button variant="outline" className="w-full">
                   View Guide
                   <ExternalLink className="h-3 w-3 ml-1" />
                 </Button>
+                </a>
+
+                
+
               </CardFooter>
             </Card>
           </div>

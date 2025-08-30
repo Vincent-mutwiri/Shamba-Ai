@@ -93,12 +93,6 @@ A geospatial information system that:
   - Edge functions for serverless backend operations
   - Real-time subscriptions for live data updates
 
-### Maps and Visualization
-
-- **Google Maps API**: Interactive, customizable maps with extensive features including:
-  - High-performance map rendering
-  - Custom styles and data visualization
-  - Geocoding and geolocation services
 
 ## Feature Images
 
@@ -162,7 +156,6 @@ AgriSenti follows a modern client-server architecture designed for scalability a
 - **Node.js**: v18.0.0 or later (v20+ recommended for best performance)
 - **Package Manager**: npm v9+ or Bun v1.0.2+
 - **Supabase Account**: Free tier sufficient for development
-- **Google Maps API Key**: Required for map functionality
 
 ### Development Environment Setup
 
@@ -233,7 +226,7 @@ VITE_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
 
 # API Configuration
 VITE_API_BASE_URL=https://api.weatherapi.com/v1
-VITE_WEATHER_API_KEY=b3526825bf6345ad829220441252605
+VITE_WEATHER_API_KEY=
 
 # Feature Flags
 VITE_ENABLE_OFFLINE_MODE=true
@@ -273,14 +266,6 @@ Located in `public/assets/images/`:
 - **market-dashboard.png** - Illustration for the Market Dashboard feature
 - **weather-monitoring.png** - Illustration for the Weather Monitoring feature
 - **interactive-maps.png** - Illustration for the Interactive Maps feature
-
-### Team Member Images
-
-Located in `public/assets/team/`:
-
-- **team-member-1.png** - Photo of Fakii Mohammed (CEO)
-- **team-member-2.png** - Andrew Ogembo (CTO) - Uses icon
-- **team-member-3.png** - Chiboniso Nyoni (User Experience Lead) - Uses icon
 
 ### Icons
 
@@ -328,13 +313,21 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 The AgriSenti project is developed and maintained by a dedicated team with expertise in educational technology, AI systems, and user experience design:
 
-- **Fakii Mohammed** - CEO  
+- **Vincent Mutwiri** - CEO  
   Visionary leader with extensive experience in educational technology and family-centered solutions
 
-- **Andrew Ogembo** - CTO  
+- **Raphael Gitari** - CTO  
   Technical architect specializing in AI systems and scalable educational platforms
 
-- **Chiboniso Nyoni** - User Experience Lead  
+- **Ivy Tanui** - User Experience Lead  
+  UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible
+
+- **Natalie Mumbi** - User Experience Lead  
+  UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible
+- **Emmanuel Ngugi** - User Experience Lead  
+  UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible
+
+  - **Ivy Tanui** - User Experience Lead  
   UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible
 
 Our diverse team brings together experience in educational technology, AI systems, user experience design, and family-centered solutions to create a platform that empowers farmers through accessible and intuitive technology.
