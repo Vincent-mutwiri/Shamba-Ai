@@ -3,11 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, Bot, User, Image, Mic, Paperclip, Loader2, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Send, Bot, User, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 
 import { FormattedMessage } from "./FormattedMessage";
 import { createStructuredPrompt } from "@/lib/chatFormat";
@@ -21,10 +18,10 @@ interface Message {
 }
 
 export const CropAssistant = () => {
-  // Initialize Inflection AI
-  const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
-  const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
-  
+  // Initialize AI API
+  const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+  const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -71,10 +68,10 @@ I'm here to help you with farming across Kenya. I can assist with:
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
-    if (!INFLECTION_API_KEY) {
+    if (!GEMINI_API_KEY) {
       toast({
-        title: "API Configuration Error",
-        description: "Inflection API key is not configured. Please check your environment variables.",
+        title: "API Key Missing",
+        description: "Gemini API key is not configured. Please check your environment variables.",
         variant: "destructive",
       });
       return;
@@ -103,15 +100,51 @@ I'm here to help you with farming across Kenya. I can assist with:
     setMessages(prev => [...prev, thinkingMessage]);
 
     try {
-      // Get static response
-      const response = generateStaticResponse(inputValue);
-      
-      // Remove the thinking message and add the actual response
+      const prompt = createStructuredPrompt(inputValue, 'crop-assistant');
+      let text = '';
+
+      // Try Gemini API
+      try {
+        const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            contents: [{
+              parts: [{
+                text: prompt
+              }]
+            }],
+            generationConfig: {
+              temperature: 0.7,
+              maxOutputTokens: 1000
+            }
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        } else {
+          throw new Error(`Gemini API request failed with status: ${response.status}`);
+        }
+      } catch (apiError) {
+        console.warn('Gemini API failed, falling back to static response:', apiError);
+        text = generateStaticResponse(inputValue);
+      }
+
+      if (!text) {
+        // If text is still empty, use the static response as a final fallback
+        text = generateStaticResponse(inputValue);
+      }
+
+      // Replace the thinking message with the actual response
       setMessages(prev => prev.filter(m => !m.thinking));
       
       const botMessage: Message = {
-        id: (Date.now() + 100).toString(),
-        text: response,
+        id: (Date.now() + 1).toString(),
+        text: text,
         sender: "bot",
         timestamp: new Date()
       };
@@ -119,79 +152,29 @@ I'm here to help you with farming across Kenya. I can assist with:
       setMessages(prev => [...prev, botMessage]);
     } catch (error) {
       console.error("Error generating response:", error);
-      
-      // Remove thinking message and show error
+
+      // Ensure thinking message is removed and add a fallback message on error
       setMessages(prev => prev.filter(m => !m.thinking));
       
-      let errorMessage = "Sorry, I'm having trouble generating a response. Please try again later.";
-      
-      if (error instanceof Error) {
-        if (error.message.includes("API_KEY")) {
-          errorMessage = "Invalid API key. Please check your Inflection API configuration.";
-        } else if (error.message.includes("quota")) {
-          errorMessage = "API quota exceeded. Please try again later.";
-        } else if (error.message.includes("network")) {
-          errorMessage = "Network error. Please check your internet connection.";
-        }
-      }
-      
-      const errorMsg: Message = {
-        id: (Date.now() + 100).toString(),
-        text: errorMessage,
+      const fallbackMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        text: generateStaticResponse(inputValue),
         sender: "bot",
         timestamp: new Date()
       };
       
-      setMessages(prev => [...prev, errorMsg]);
-      
-      toast({
-        title: "Error",
-        description: "Failed to generate a response. Please try again.",
-        variant: "destructive"
-      });
+      setMessages(prev => [...prev, fallbackMsg]);
     } finally {
       setIsLoading(false);
     }
   };
 
-<<<<<<< HEAD
-
-
-  const generateGeminiResponse = async (question: string): Promise<string> => {
-    if (!genAI) {
-      throw new Error("Gemini API not initialized");
-    }
-
-    try {
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const prompt = createStructuredPrompt(question, isMobile);
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      if (!text || text.trim().length === 0) {
-        throw new Error("Empty response from Gemini API");
-      }
-      
-      return text;
-    } catch (error) {
-      console.error("Error calling Gemini API:", error);
-      
-      if (error instanceof Error) {
-        if (error.message.includes("API_KEY")) {
-          throw new Error("Invalid Gemini API key");
-        } else if (error.message.includes("quota")) {
-          throw new Error("API quota exceeded");
-        } else if (error.message.includes("network")) {
-          throw new Error("Network error occurred");
-        }
-      }
-      
-      throw new Error("Failed to generate response from Gemini API");
-=======
   const generateStaticResponse = (question: string): string => {
     const q = question.toLowerCase();
+    
+    if (q.includes('sisal')) {
+      return `**Sisal Farming in Kenya:**\n\n**Growing Conditions:**\n• Thrives in semi-arid areas (500-1000mm rainfall)\n• Well-drained soils, pH 6.0-7.5\n• Coastal and Eastern regions ideal\n\n**Planting:**\n• Use suckers or bulbils\n• Plant spacing: 2m x 3m (1,650 plants/hectare)\n• Best planting: start of rains\n\n**Management:**\n• First harvest after 4-5 years\n• Harvest every 6-8 months\n• Remove flower stalks to maintain fiber quality\n\n**Market:**\n• High demand for rope, twine, carpets\n• Export potential to Europe, Asia\n• Current price: KSh 15-25 per kg`;
+    }
     
     if (q.includes('fertilizer') || q.includes('manure')) {
       return `**Fertilizer Recommendations for Kenya:**\n\n**For Maize:**\n• NPK 17:17:17 during planting\n• CAN (Calcium Ammonium Nitrate) for top dressing\n• DAP (Diammonium Phosphate) for phosphorus\n\n**For Vegetables:**\n• NPK 20:20:20 for balanced nutrition\n• Organic compost for soil health\n• Foliar feeds for quick nutrient uptake\n\n**Application Tips:**\n• Apply fertilizer 2-3 weeks after planting\n• Water immediately after application\n• Follow soil test recommendations\n\n**Organic Options:**\n• Well-decomposed farmyard manure\n• Compost from kitchen waste\n• Green manure from legumes`;
@@ -199,18 +182,9 @@ I'm here to help you with farming across Kenya. I can assist with:
     
     if (q.includes('pest') || q.includes('disease') || q.includes('armyworm')) {
       return `**Pest & Disease Management:**\n\n**Common Pests:**\n• Fall Armyworm - Use Bt sprays or neem oil\n• Aphids - Spray with soapy water\n• Cutworms - Use collar barriers around plants\n\n**Disease Control:**\n• Fungal diseases - Apply copper-based fungicides\n• Bacterial wilt - Use resistant varieties\n• Viral diseases - Control vector insects\n\n**Prevention:**\n• Crop rotation every season\n• Remove infected plant debris\n• Use certified disease-free seeds\n• Maintain proper plant spacing`;
->>>>>>> 50c25283df0d13df3b64e4d8973b684c441263a1
     }
     
-    if (q.includes('weather') || q.includes('rain') || q.includes('season')) {
-      return `**Weather & Seasonal Advice:**\n\n**Planting Seasons:**\n• Long rains: March-May\n• Short rains: October-December\n• Irrigation farming: Year-round\n\n**Weather Monitoring:**\n• Check 7-day forecasts before planting\n• Prepare drainage for heavy rains\n• Have irrigation backup for dry spells\n\n**Climate Adaptation:**\n• Use drought-resistant varieties\n• Practice water conservation\n• Adjust planting dates based on rainfall`;
-    }
-    
-    if (q.includes('market') || q.includes('price') || q.includes('sell')) {
-      return `**Market Information:**\n\n**Best Markets:**\n• Nairobi: Wakulima, Marikiti\n• Mombasa: Kongowea Market\n• Kisumu: Jubilee Market\n• County markets for local sales\n\n**Price Factors:**\n• Quality and grading standards\n• Seasonal supply and demand\n• Transportation costs\n• Storage and post-harvest handling\n\n**Marketing Tips:**\n• Form farmer groups for bulk sales\n• Direct sales to schools/institutions\n• Value addition through processing`;
-    }
-    
-    return `**General Farming Advice:**\n\n**Crop Selection:**\n• Choose varieties suited to your climate zone\n• Consider market demand in your area\n• Use certified seeds from reputable dealers\n\n**Soil Management:**\n• Test soil pH and nutrients annually\n• Add organic matter regularly\n• Practice conservation agriculture\n\n**Water Management:**\n• Install drip irrigation for efficiency\n• Harvest rainwater during wet seasons\n• Mulch to reduce water loss\n\n**Record Keeping:**\n• Track planting dates and varieties\n• Monitor input costs and yields\n• Keep market price records\n\nWhat specific aspect of farming would you like to know more about?`;
+    return `**General Farming Advice:**\n\nI couldn't find a specific answer for your query. Here's some general advice:\n\n**Crop Selection:**\n• Choose climate-suited varieties\n• Consider market demand\n• Use certified seeds\n\n**Soil Management:**\n• Test soil annually\n• Add organic matter\n• Practice conservation agriculture\n\nCould you please ask about a specific crop or farming problem?`;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -221,10 +195,10 @@ I'm here to help you with farming across Kenya. I can assist with:
   };
 
   const quickQuestions = [
-    "What fertilizers work best for maize in Kenya?",
-    "How do I control fall armyworm in my crops?", 
-    "When is the best time to plant tea in Kericho?",
-    "Current weather forecast for farming"
+    "What fertilizers for maize?",
+    "How to control fall armyworm?",
+    "Tell me about sisal farming",
+    "Best time to plant in Kericho?",
   ];
   
   return (
@@ -234,7 +208,7 @@ I'm here to help you with farming across Kenya. I can assist with:
           <ScrollArea className="flex-1 overflow-y-auto p-2 sm:p-4">
             <div className="flex flex-col space-y-3 sm:space-y-4">
               {messages.map((message) => (
-                <div 
+                <div  
                   key={message.id}
                   className={`flex items-start gap-1.5 sm:gap-2 ${
                     message.sender === "user" ? "justify-end" : "justify-start"
@@ -256,13 +230,13 @@ I'm here to help you with farming across Kenya. I can assist with:
                     {message.sender === "user" ? (
                       <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
                     ) : (
-                      <FormattedMessage 
-                        content={message.text} 
+                      <FormattedMessage  
+                        content={message.text}  
                         className="text-xs sm:text-sm leading-relaxed text-gray-900"
                       />
                     )}
                     <p className="text-xs opacity-70 mt-1">
-                      {message.timestamp.toLocaleTimeString()}
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>
                   
@@ -274,7 +248,7 @@ I'm here to help you with farming across Kenya. I can assist with:
                 </div>
               ))}
               
-              {isLoading && (
+              {isLoading && messages.some(m => m.thinking) && (
                 <div className="flex items-start gap-1.5 sm:gap-2">
                   <div className="bg-green-600 p-1 sm:p-1.5 md:p-2 rounded-full flex-shrink-0">
                     <Bot className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
@@ -282,8 +256,8 @@ I'm here to help you with farming across Kenya. I can assist with:
                   <div className="bg-gray-100 p-2 sm:p-3 rounded-lg">
                     <div className="flex gap-1">
                       <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce animate-delay-100"></div>
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce animate-delay-200"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.1s]"></div>
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></div>
                     </div>
                   </div>
                 </div>
@@ -299,34 +273,35 @@ I'm here to help you with farming across Kenya. I can assist with:
                   key={index}
                   variant="outline"
                   size="sm"
-                  onClick={() => setInputValue(question)}
+                  onClick={() => {
+                    setInputValue(question);
+                    inputRef.current?.focus();
+                  }}
                   className="text-xs px-2 py-1 sm:px-3 sm:py-2 h-auto whitespace-nowrap flex-shrink-0"
                 >
-                  {isMobile && question.length > 15 ? question.substring(0, 15) + "..." : question}
+                  {isMobile && question.length > 25 ? question.substring(0, 25) + "..." : question}
                 </Button>
               ))}
             </div>
             
             <div className="flex gap-2">
               <Input
+                ref={inputRef}
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder={isMobile ? "Ask about farming..." : "Ask about crops, weather, fertilizers..."}
                 onKeyDown={handleKeyDown}
                 disabled={isLoading}
                 className="text-sm flex-1 min-w-0"
-                ref={inputRef}
               />
-              <Button 
-                onClick={handleSendMessage} 
+              <Button  
+                onClick={handleSendMessage}  
                 disabled={isLoading || !inputValue.trim()}
                 className="bg-green-600 hover:bg-green-700 flex-shrink-0 px-2 sm:px-3 md:px-4"
                 size="sm"
               >
                 {isLoading ? (
                   <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                ) : false ? (
-                  <span className="text-xs">API Error</span>
                 ) : (
                   <Send className="w-3 h-3 sm:w-4 sm:h-4" />
                 )}

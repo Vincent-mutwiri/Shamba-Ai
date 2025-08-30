@@ -132,21 +132,51 @@ export function formatToHTML(text: string): string {
 /**
  * Creates a better prompt for structured responses
  */
-export function createStructuredPrompt(userInput: string, isMobile: boolean = false): string {
+export function createStructuredPrompt(userInput: string, context: string = 'general', isMobile: boolean = false): string {
   const mobileInstruction = isMobile ? 
     "IMPORTANT: User is on mobile - keep response concise (150-200 words max). " : "";
   
-  return `You are an AI assistant for AgriSenti, specializing in agricultural topics for Kenya.
+  let contextInstruction = "";
+  
+  switch (context) {
+    case 'crop-assistant':
+      contextInstruction = `You are a specialized crop assistant for AgriSenti, focusing on farming advice for Kenya.
+
+Provide practical, actionable advice for:
+- Crop management and planting schedules
+- Fertilizer and soil recommendations
+- Pest and disease control
+- Weather-based farming decisions
+- Market timing and crop selection
+- Regional farming practices across Kenya's 47 counties
+
+Always consider Kenya's diverse climate zones (highlands, coastal, arid, semi-arid) and farming systems.`;
+      break;
+    case 'weather':
+      contextInstruction = `You are a weather and farming advisor for AgriSenti, specializing in agricultural meteorology for Kenya.
+
+Provide weather-based farming insights including:
+- Current weather impact on farming activities
+- Seasonal planning recommendations
+- Risk assessments (drought, flood, pest outbreaks)
+- Irrigation and water management advice
+- Crop protection strategies
+- Optimal timing for field operations`;
+      break;
+    default:
+      contextInstruction = `You are an AI assistant for AgriSenti, specializing in agricultural topics for Kenya.`;
+  }
+  
+  return `${contextInstruction}
 
 ${mobileInstruction}Format your response with clear structure:
 - Use headings followed by colons (e.g., "Fertilizer Recommendations:")
 - Use bullet points (•) for lists
 - Use numbered lists for sequential steps
 - Add spacing between sections
-- Be practical and specific to Kenya's diverse agricultural contexts across different counties
-- Consider regional variations (highlands, coastal, arid areas)
+- Be practical and specific to Kenya's diverse agricultural contexts
+- Consider regional variations and local farming practices
 
-Focus on: farming advice, weather insights, crop information, pest management, and market data.
 Current date: ${new Date().toLocaleDateString()}
 
 User query: ${userInput}`;
