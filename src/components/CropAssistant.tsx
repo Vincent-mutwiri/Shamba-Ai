@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { FormattedMessage } from "./FormattedMessage";
 import { createStructuredPrompt } from "@/lib/chatFormat";
 
@@ -21,9 +21,9 @@ interface Message {
 }
 
 export const CropAssistant = () => {
-  // Initialize Gemini API
-  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
+  // Initialize Inflection AI
+  const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
+  const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
   
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -71,10 +71,10 @@ I'm here to help you with farming across Kenya. I can assist with:
   const handleSendMessage = async () => {
     if (!inputValue.trim()) return;
 
-    if (!genAI) {
+    if (!INFLECTION_API_KEY) {
       toast({
         title: "API Configuration Error",
-        description: "Gemini API key is not configured. Please check your environment variables.",
+        description: "Inflection API key is not configured. Please check your environment variables.",
         variant: "destructive",
       });
       return;
@@ -103,8 +103,8 @@ I'm here to help you with farming across Kenya. I can assist with:
     setMessages(prev => [...prev, thinkingMessage]);
 
     try {
-      // Get response from Gemini API
-      const response = await generateGeminiResponse(inputValue);
+      // Get static response
+      const response = generateStaticResponse(inputValue);
       
       // Remove the thinking message and add the actual response
       setMessages(prev => prev.filter(m => !m.thinking));
@@ -127,7 +127,7 @@ I'm here to help you with farming across Kenya. I can assist with:
       
       if (error instanceof Error) {
         if (error.message.includes("API_KEY")) {
-          errorMessage = "Invalid API key. Please check your Gemini API configuration.";
+          errorMessage = "Invalid API key. Please check your Inflection API configuration.";
         } else if (error.message.includes("quota")) {
           errorMessage = "API quota exceeded. Please try again later.";
         } else if (error.message.includes("network")) {
@@ -154,47 +154,26 @@ I'm here to help you with farming across Kenya. I can assist with:
     }
   };
 
-  const generateGeminiResponse = async (question: string): Promise<string> => {
-    if (!genAI) {
-      throw new Error("Gemini API not initialized");
+  const generateStaticResponse = (question: string): string => {
+    const q = question.toLowerCase();
+    
+    if (q.includes('fertilizer') || q.includes('manure')) {
+      return `**Fertilizer Recommendations for Kenya:**\n\n**For Maize:**\n• NPK 17:17:17 during planting\n• CAN (Calcium Ammonium Nitrate) for top dressing\n• DAP (Diammonium Phosphate) for phosphorus\n\n**For Vegetables:**\n• NPK 20:20:20 for balanced nutrition\n• Organic compost for soil health\n• Foliar feeds for quick nutrient uptake\n\n**Application Tips:**\n• Apply fertilizer 2-3 weeks after planting\n• Water immediately after application\n• Follow soil test recommendations\n\n**Organic Options:**\n• Well-decomposed farmyard manure\n• Compost from kitchen waste\n• Green manure from legumes`;
     }
-
-    try {
-      // Get the generative model (using stable version)
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      // Create a structured prompt using the utility function
-      const prompt = createStructuredPrompt(question, isMobile);
-      
-      console.log("Sending prompt to Gemini:", prompt); // For debugging
-      
-      // Generate content using Gemini API
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      console.log("Gemini response:", text); // For debugging
-      
-      if (!text || text.trim().length === 0) {
-        throw new Error("Empty response from Gemini API");
-      }
-      
-      return text;
-    } catch (error) {
-      console.error("Error calling Gemini API:", error);
-      
-      if (error instanceof Error) {
-        if (error.message.includes("API_KEY")) {
-          throw new Error("Invalid Gemini API key");
-        } else if (error.message.includes("quota")) {
-          throw new Error("API quota exceeded");
-        } else if (error.message.includes("network")) {
-          throw new Error("Network error occurred");
-        }
-      }
-      
-      throw new Error("Failed to generate response from Gemini API");
+    
+    if (q.includes('pest') || q.includes('disease') || q.includes('armyworm')) {
+      return `**Pest & Disease Management:**\n\n**Common Pests:**\n• Fall Armyworm - Use Bt sprays or neem oil\n• Aphids - Spray with soapy water\n• Cutworms - Use collar barriers around plants\n\n**Disease Control:**\n• Fungal diseases - Apply copper-based fungicides\n• Bacterial wilt - Use resistant varieties\n• Viral diseases - Control vector insects\n\n**Prevention:**\n• Crop rotation every season\n• Remove infected plant debris\n• Use certified disease-free seeds\n• Maintain proper plant spacing`;
     }
+    
+    if (q.includes('weather') || q.includes('rain') || q.includes('season')) {
+      return `**Weather & Seasonal Advice:**\n\n**Planting Seasons:**\n• Long rains: March-May\n• Short rains: October-December\n• Irrigation farming: Year-round\n\n**Weather Monitoring:**\n• Check 7-day forecasts before planting\n• Prepare drainage for heavy rains\n• Have irrigation backup for dry spells\n\n**Climate Adaptation:**\n• Use drought-resistant varieties\n• Practice water conservation\n• Adjust planting dates based on rainfall`;
+    }
+    
+    if (q.includes('market') || q.includes('price') || q.includes('sell')) {
+      return `**Market Information:**\n\n**Best Markets:**\n• Nairobi: Wakulima, Marikiti\n• Mombasa: Kongowea Market\n• Kisumu: Jubilee Market\n• County markets for local sales\n\n**Price Factors:**\n• Quality and grading standards\n• Seasonal supply and demand\n• Transportation costs\n• Storage and post-harvest handling\n\n**Marketing Tips:**\n• Form farmer groups for bulk sales\n• Direct sales to schools/institutions\n• Value addition through processing`;
+    }
+    
+    return `**General Farming Advice:**\n\n**Crop Selection:**\n• Choose varieties suited to your climate zone\n• Consider market demand in your area\n• Use certified seeds from reputable dealers\n\n**Soil Management:**\n• Test soil pH and nutrients annually\n• Add organic matter regularly\n• Practice conservation agriculture\n\n**Water Management:**\n• Install drip irrigation for efficiency\n• Harvest rainwater during wet seasons\n• Mulch to reduce water loss\n\n**Record Keeping:**\n• Track planting dates and varieties\n• Monitor input costs and yields\n• Keep market price records\n\nWhat specific aspect of farming would you like to know more about?`;
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -303,13 +282,13 @@ I'm here to help you with farming across Kenya. I can assist with:
               />
               <Button 
                 onClick={handleSendMessage} 
-                disabled={isLoading || !inputValue.trim() || !genAI}
+                disabled={isLoading || !inputValue.trim()}
                 className="bg-green-600 hover:bg-green-700 flex-shrink-0 px-2 sm:px-3 md:px-4"
                 size="sm"
               >
                 {isLoading ? (
                   <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 animate-spin" />
-                ) : !genAI ? (
+                ) : false ? (
                   <span className="text-xs">API Error</span>
                 ) : (
                   <Send className="w-3 h-3 sm:w-4 sm:h-4" />

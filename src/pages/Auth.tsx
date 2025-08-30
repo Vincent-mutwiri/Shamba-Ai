@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sprout, Eye, EyeOff, Mail, Lock, User, MapPin, Loader2 } from "lucide-react";
+import { CountySelector } from "@/components/CountySelector";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
@@ -28,6 +29,7 @@ const Auth = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    county: "",
     location: "",
     farmSize: ""
   });
@@ -159,7 +161,7 @@ const Auth = () => {
               Welcome to AgriSenti
             </h1>
             <p className="text-lg text-green-700 mb-6">
-              Your smart farming companion for better yields, disease detection, and market access in Nakuru County.
+              Your smart farming companion for better yields, disease detection, and market access across Kenya.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
@@ -318,21 +320,16 @@ const Auth = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
-                      <Select onValueChange={(value) => setSignupData(prev => ({ ...prev, location: value }))}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select location" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="nakuru-town">Nakuru Town</SelectItem>
-                          <SelectItem value="njoro">Njoro</SelectItem>
-                          <SelectItem value="naivasha">Naivasha</SelectItem>
-                          <SelectItem value="molo">Molo</SelectItem>
-                          <SelectItem value="gilgil">Gilgil</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <Label>County & Location</Label>
+                      <CountySelector 
+                        value={signupData.county}
+                        onValueChange={(value) => setSignupData(prev => ({ ...prev, county: value }))}
+                        placeholder="Select your county"
+                        showLocations={true}
+                        onLocationChange={(location) => setSignupData(prev => ({ ...prev, location }))}
+                      />
                     </div>
 
                     <div className="space-y-2">

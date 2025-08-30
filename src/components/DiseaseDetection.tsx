@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Camera, Upload, AlertTriangle, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { DiseaseDetailsCard } from "./DiseaseDetailsCard";
 
 interface AnalysisResult {
@@ -17,8 +17,8 @@ interface AnalysisResult {
 
 export const DiseaseDetection = () => {
   // Initialize Gemini API
-  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
+  const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
+  const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
   
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);

@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+
 import { FormattedMessage } from './FormattedMessage';
 import { createStructuredPrompt } from '@/lib/chatFormat';
 
 // Constants
 const MODEL_NAME = 'gemini-1.5-flash';  // Using stable model
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const genAI = API_KEY ? new GoogleGenerativeAI(API_KEY) : null;
+const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
+const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
 
 interface Message {
   role: 'user' | 'model' | 'error';

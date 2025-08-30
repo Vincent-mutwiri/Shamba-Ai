@@ -23,7 +23,8 @@ export const CountySelector = ({
   onLocationChange
 }: CountySelectorProps) => {
   const [selectedLocation, setSelectedLocation] = useState<string>("");
-  const locations = value ? getLocationsByCounty(value) : [];
+  const countyName = value ? KENYAN_COUNTIES.find(c => c.toLowerCase().replace(/[^a-z0-9]/g, '-') === value) : '';
+  const locations = countyName ? getLocationsByCounty(countyName) : [];
 
   return (
     <div className="space-y-2">
@@ -38,7 +39,7 @@ export const CountySelector = ({
           <SelectItem value="all">All Counties</SelectItem>
           {KENYAN_COUNTIES.map((county) => (
             <SelectItem key={county} value={county.toLowerCase().replace(/[^a-z0-9]/g, '-')}>
-              {county} County
+              {county}
             </SelectItem>
           ))}
         </SelectContent>
