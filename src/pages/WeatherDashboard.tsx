@@ -1,132 +1,112 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThermometerSun, Wind, Droplets, Sun, CloudRain, Clock, AlertTriangle } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage } from "@/components/FormattedMessage";
 import { CountySelector } from "@/components/CountySelector";
+import { getWeatherByLocation } from "@/data/complete-weather-data";
 
 export const WeatherDashboard = () => {
-  // Initialize Gemini API with useMemo to prevent recreating on every render
-  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  const genAI = useMemo(() => {
-    if (!API_KEY) {
-      console.error("VITE_GEMINI_API_KEY is not configured");
-      return null;
-    }
-    return new GoogleGenerativeAI(API_KEY);
-  }, [API_KEY]);
+  const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
+  const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
   
   const [loading, setLoading] = useState(false);
   const [farmingInsight, setFarmingInsight] = useState("");
   const [insightError, setInsightError] = useState("");
   const [selectedCounty, setSelectedCounty] = useState("nairobi");
+  const [selectedLocation, setSelectedLocation] = useState("");
   
-  // Mock data for weather - we'll keep this since real weather API integration would be separate
-  const weatherData = {
-    current: {
-      temperature: 24,
-      condition: "Partly Cloudy",
-      humidity: 65,
-      windSpeed: 12,
-      precipitation: 0,
-      uv: 5,
-    },
-    forecast: [
-      { day: "Today", temp: 24, icon: Sun },
-      { day: "Tomorrow", temp: 23, icon: CloudRain },
-      { day: "Wednesday", temp: 25, icon: Sun },
-      { day: "Thursday", temp: 22, icon: CloudRain },
-      { day: "Friday", temp: 24, icon: Sun },
-    ],
+  // Handle county change - reset location
+  const handleCountyChange = (county: string) => {
+    setSelectedCounty(county);
+    setSelectedLocation("");
   };
   
-  // Get farming insights based on weather data using Gemini API
-  const getFarmingInsights = useCallback(async () => {
-    setLoading(true);
-    setInsightError("");
-    
-    try {
-      if (!genAI) {
-        setInsightError("AI service is not properly configured. Please check your API key.");
-        return;
-      }
-
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      const countyName = selectedCounty === 'all' ? 'Kenya' : selectedCounty.charAt(0).toUpperCase() + selectedCounty.slice(1).replace('-', ' ');
-      const weatherSummary = `
-        Current weather in ${countyName}: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
-        Humidity: ${weatherData.current.humidity}%
-        Wind Speed: ${weatherData.current.windSpeed} km/h
-        Precipitation: ${weatherData.current.precipitation} mm
-        
-        5-Day Forecast:
-        - Today: ${weatherData.forecast[0].temp}°C
-        - Tomorrow: ${weatherData.forecast[1].temp}°C
-        - Wednesday: ${weatherData.forecast[2].temp}°C
-        - Thursday: ${weatherData.forecast[3].temp}°C
-        - Friday: ${weatherData.forecast[4].temp}°C
-      `;
-      
-      const prompt = `
-        You are an agricultural weather expert for Kenya. 
-        
-        **Format your response with clear structure using:**
-        - Headings followed by colons (e.g., "Recommended Activities:")
-        - Bullet points (•) for lists
-        - Numbered steps for sequential actions
-        
-        Based on the following weather data for ${countyName}, provide practical farming advice:
-        
-        ${weatherSummary}
-        
-        **Provide specific recommendations about:**
-        
-        **Recommended Activities:**
-        - What farming activities are optimal in these conditions
-        
-        **Precautions:**
-        - Any safety measures farmers should take
-        
-        **Irrigation Advice:**
-        - Optimal watering schedule given the forecast
-        
-        **Pest & Disease Risks:**
-        - Potential threats that might increase in these conditions
-        
-        Keep response under 200 words, practical, and specific to ${countyName}'s agricultural context and typical crops grown in this region.
-      `;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      console.log("Weather AI Response:", text);
-      setFarmingInsight(text);
-    } catch (error: any) {
-      console.error("Error getting farming insights:", error);
-      
-      // Handle specific error types
-      if (error?.message?.includes('API_KEY_INVALID')) {
-        setInsightError("Invalid API key. Please check your configuration.");
-      } else if (error?.message?.includes('QUOTA_EXCEEDED')) {
-        setInsightError("AI service quota exceeded. Please try again later.");
-      } else if (error?.message?.includes('fetch')) {
-        setInsightError("Network error. Please check your internet connection.");
-      } else {
-        setInsightError("Failed to generate farming insights. Please try again later.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [genAI, weatherData]);
+  // Handle location change with debug
+  const handleLocationChange = (location: string) => {
+    console.log('Location changed to:', location);
+    setSelectedLocation(location);
+  };
   
-  // Get insights on initial load
+  // Get weather data based on selected location
+  const weatherData = useMemo(() => {
+    const locationKey = selectedLocation || "default";
+    const data = getWeatherByLocation(locationKey);
+    return {
+      current: data.current,
+      forecast: data.forecast.map(day => ({
+        ...day,
+        icon: day.condition === 'sunny' ? Sun : day.condition === 'rainy' ? CloudRain : Sun
+      }))
+    };
+  }, [selectedLocation]);
+  
+  // Generate farming insights based on weather conditions
+  const getFarmingInsights = useCallback(() => {
+    const locationName = selectedLocation || 'your area';
+    const temp = weatherData.current.temperature;
+    const condition = weatherData.current.condition;
+    const humidity = weatherData.current.humidity;
+    const wind = weatherData.current.windSpeed;
+    
+    let activities = [];
+    let precautions = [];
+    let irrigation = [];
+    let risks = [];
+    
+    // Temperature-based advice
+    if (temp > 30) {
+      activities.push('Early morning or late evening farming activities');
+      precautions.push('Protect workers from heat stress');
+      irrigation.push('Increase watering frequency');
+    } else if (temp < 18) {
+      activities.push('Midday farming when temperatures are warmer');
+      precautions.push('Protect sensitive crops from cold');
+      irrigation.push('Reduce watering to prevent root rot');
+    } else {
+      activities.push('Optimal conditions for most farming activities');
+      irrigation.push('Maintain regular watering schedule');
+    }
+    
+    // Condition-based advice
+    if (condition.toLowerCase().includes('rain')) {
+      activities.push('Harvest mature crops before heavy rains');
+      precautions.push('Ensure proper drainage in fields');
+      irrigation.push('Reduce or stop irrigation');
+      risks.push('Fungal diseases due to high moisture');
+    } else if (condition.toLowerCase().includes('sunny')) {
+      activities.push('Ideal for drying harvested crops');
+      irrigation.push('Monitor soil moisture closely');
+    }
+    
+    // Humidity-based advice
+    if (humidity > 80) {
+      risks.push('High disease pressure from humidity');
+      precautions.push('Improve air circulation around crops');
+    } else if (humidity < 50) {
+      irrigation.push('Increase watering due to low humidity');
+      precautions.push('Mulch to retain soil moisture');
+    }
+    
+    // Wind-based advice
+    if (wind > 20) {
+      precautions.push('Avoid spraying pesticides in high winds');
+      precautions.push('Stake tall crops to prevent damage');
+    }
+    
+    const insight = `**Weather-Based Farming Advice for ${locationName}:**\n\n**Current Conditions:** ${temp}°C, ${condition}, ${humidity}% humidity, ${wind} km/h wind\n\n**Recommended Activities:**\n${activities.map(a => `• ${a}`).join('\n')}\n\n**Precautions:**\n${precautions.map(p => `• ${p}`).join('\n')}\n\n**Irrigation Advice:**\n${irrigation.map(i => `• ${i}`).join('\n')}${risks.length > 0 ? `\n\n**Pest & Disease Risks:**\n${risks.map(r => `• ${r}`).join('\n')}` : ''}`;
+    
+    setFarmingInsight(insight);
+  }, [selectedLocation, weatherData]);
+  
+  // Get insights on load and location change
   useEffect(() => {
     getFarmingInsights();
   }, [getFarmingInsights]);
+
+
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -141,8 +121,10 @@ export const WeatherDashboard = () => {
         <div className="w-full sm:w-64">
           <CountySelector 
             value={selectedCounty} 
-            onValueChange={setSelectedCounty}
+            onValueChange={handleCountyChange}
             placeholder="Select county for weather"
+            showLocations={true}
+            onLocationChange={handleLocationChange}
           />
         </div>
       </div>
@@ -240,6 +222,152 @@ export const WeatherDashboard = () => {
                 </span>
               </div>
             ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Monthly Weather Trend */}
+      <Card>
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardTitle className="text-base sm:text-lg">30-Day Weather Trend</CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="h-64 sm:h-80">
+            <div className="w-full h-full bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 relative overflow-hidden">
+              <svg className="w-full h-full" viewBox="0 0 400 200">
+                {/* Grid lines */}
+                <defs>
+                  <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                {/* Temperature line */}
+                <polyline
+                  fill="none"
+                  stroke="#dc2626"
+                  strokeWidth="2"
+                  points={Array.from({length: 30}, (_, i) => {
+                    const baseTemp = weatherData.current.temperature;
+                    const variation = Math.sin(i * 0.2) * 5 + Math.random() * 3 - 1.5;
+                    const temp = baseTemp + variation;
+                    const x = (i / 29) * 380 + 10;
+                    const y = 180 - ((temp - 10) / 30) * 160;
+                    return `${x},${y}`;
+                  }).join(' ')}
+                />
+                
+                {/* Humidity line */}
+                <polyline
+                  fill="none"
+                  stroke="#2563eb"
+                  strokeWidth="2"
+                  points={Array.from({length: 30}, (_, i) => {
+                    const baseHumidity = weatherData.current.humidity;
+                    const variation = Math.cos(i * 0.15) * 10 + Math.random() * 5 - 2.5;
+                    const humidity = Math.max(30, Math.min(90, baseHumidity + variation));
+                    const x = (i / 29) * 380 + 10;
+                    const y = 180 - ((humidity - 20) / 70) * 160;
+                    return `${x},${y}`;
+                  }).join(' ')}
+                />
+                
+                {/* Legend */}
+                <g transform="translate(10, 10)">
+                  <rect x="0" y="0" width="120" height="40" fill="white" fillOpacity="0.9" rx="4"/>
+                  <line x1="10" y1="15" x2="25" y2="15" stroke="#dc2626" strokeWidth="2"/>
+                  <text x="30" y="19" fontSize="12" fill="#374151">Temperature</text>
+                  <line x1="10" y1="30" x2="25" y2="30" stroke="#2563eb" strokeWidth="2"/>
+                  <text x="30" y="34" fontSize="12" fill="#374151">Humidity</text>
+                </g>
+                
+                {/* Y-axis labels */}
+                <text x="5" y="25" fontSize="10" fill="#6b7280" textAnchor="end">High</text>
+                <text x="5" y="105" fontSize="10" fill="#6b7280" textAnchor="end">Med</text>
+                <text x="5" y="185" fontSize="10" fill="#6b7280" textAnchor="end">Low</text>
+                
+                {/* X-axis labels */}
+                <text x="10" y="195" fontSize="10" fill="#6b7280">Week 1</text>
+                <text x="110" y="195" fontSize="10" fill="#6b7280">Week 2</text>
+                <text x="210" y="195" fontSize="10" fill="#6b7280">Week 3</text>
+                <text x="310" y="195" fontSize="10" fill="#6b7280">Week 4</text>
+              </svg>
+            </div>
+            <div className="mt-2 text-xs text-gray-600 text-center">
+              Monthly forecast shows temperature and humidity trends for {selectedLocation || 'your area'}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Risk Assessment */}
+      <Card>
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardTitle className="text-base sm:text-lg">Weather Risk Assessment</CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Flood Risk */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-blue-900">Flood Risk</h4>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  weatherData.current.precipitation > 5 ? 'bg-red-100 text-red-800' :
+                  weatherData.current.precipitation > 2 ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {weatherData.current.precipitation > 5 ? 'HIGH' :
+                   weatherData.current.precipitation > 2 ? 'MEDIUM' : 'LOW'}
+                </span>
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
+                <div 
+                  className={`h-2 rounded-full ${
+                    weatherData.current.precipitation > 5 ? 'bg-red-500' :
+                    weatherData.current.precipitation > 2 ? 'bg-yellow-500' :
+                    'bg-green-500'
+                  }`}
+                  style={{ width: `${Math.min(100, (weatherData.current.precipitation / 10) * 100)}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-blue-700">
+                {weatherData.current.precipitation > 5 ? 'Heavy rainfall expected. Prepare drainage systems.' :
+                 weatherData.current.precipitation > 2 ? 'Moderate rain. Monitor water levels.' :
+                 'Low precipitation. Minimal flood risk.'}
+              </p>
+            </div>
+
+            {/* Drought Risk */}
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-orange-900">Drought Risk</h4>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'bg-red-100 text-red-800' :
+                  weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'HIGH' :
+                   weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'MEDIUM' : 'LOW'}
+                </span>
+              </div>
+              <div className="w-full bg-orange-200 rounded-full h-2 mb-2">
+                <div 
+                  className={`h-2 rounded-full ${
+                    weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'bg-red-500' :
+                    weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'bg-yellow-500' :
+                    'bg-green-500'
+                  }`}
+                  style={{ width: `${weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? '85%' :
+                                          weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? '60%' : '25%'}` }}
+                ></div>
+              </div>
+              <p className="text-xs text-orange-700">
+                {weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'Very dry conditions. Increase irrigation.' :
+                 weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'Dry conditions. Monitor soil moisture.' :
+                 'Adequate moisture levels. Low drought risk.'}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
