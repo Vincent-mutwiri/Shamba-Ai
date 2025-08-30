@@ -48,10 +48,10 @@ export const DiseaseDetection = () => {
       return;
     }
 
-    if (!INFLECTION_API_KEY) {
+    if (!import.meta.env.VITE_GEMINI_API_KEY) {
       toast({
         title: "API Configuration Error",
-        description: "API key is not configured. Please check your environment variables.",
+        description: "Gemini API key is not configured. Please check your environment variables.",
         variant: "destructive",
       });
       return;
@@ -60,36 +60,56 @@ export const DiseaseDetection = () => {
     setIsAnalyzing(true);
     
     try {
-      // Generate mock analysis result based on image characteristics
-      const mockDiseases = [
-        {
-          disease: "Leaf Blight",
-          confidence: 85,
-          severity: "Medium",
-          description: "Brown spots visible on leaf surfaces, indicating possible fungal infection common in humid conditions.",
-          treatment: "Apply copper-based fungicide • Remove affected leaves • Improve air circulation • Reduce watering frequency",
-          prevention: "Plant resistant varieties • Ensure proper spacing • Avoid overhead watering • Regular field inspection"
-        },
-        {
-          disease: "Healthy Plant",
-          confidence: 92,
-          severity: "None",
-          description: "Plant appears healthy with good leaf color and no visible signs of disease or pest damage.",
-          treatment: "Continue current care practices • Monitor regularly for any changes",
-          prevention: "Maintain good farming practices • Regular monitoring • Proper nutrition • Adequate spacing"
-        },
-        {
-          disease: "Nutrient Deficiency",
-          confidence: 78,
-          severity: "Low",
-          description: "Yellowing leaves suggest possible nitrogen deficiency or natural aging of lower leaves.",
-          treatment: "Apply nitrogen fertilizer • Use CAN or Urea • Ensure proper soil pH • Improve drainage",
-          prevention: "Regular soil testing • Balanced fertilization • Organic matter addition • Proper crop rotation"
-        }
-      ];
+      // Convert image to base64 for API
+      const base64Image = selectedImage.split(',')[1];
       
-      // Select random disease for demo
-      const parsedResult = mockDiseases[Math.floor(Math.random() * mockDiseases.length)];
+      const prompt = `Analyze this crop image for diseases, pests, and health issues. Provide:
+1. Disease/condition name
+2. Confidence percentage (0-100)
+3. Severity level (None/Low/Medium/High)
+4. Detailed description of what you see
+5. Treatment recommendations
+6. Prevention measures
+
+Focus on Kenyan crops like maize, beans, potatoes, tea, coffee. Be specific about visual symptoms you observe.`;
+      
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${import.meta.env.VITE_GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              {
+                inline_data: {
+                  mime_type: "image/jpeg",
+                  data: base64Image
+                }
+              }
+            ]
+          }],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 1000
+          }
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Gemini Vision API failed: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const analysisText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+      
+      if (!analysisText) {
+        throw new Error('No analysis from Gemini Vision');
+      }
+      
+      // Parse the response to extract structured data
+      const parsedResult = parseAnalysisResponse(analysisText);
       
       setAnalysisResult(parsedResult);
       
@@ -100,28 +120,64 @@ export const DiseaseDetection = () => {
       });
       
     } catch (error) {
-      console.error("Error analyzing image with Gemini:", error);
+      console.error("Error analyzing image:", error);
       
-      let errorMessage = "Could not analyze the image. Please try again later.";
+      // Fallback to mock analysis
+      const fallbackResult = {
+        disease: "Analysis Unavailable",
+        confidence: 0,
+        severity: "Unknown" as const,
+        description: "Unable to analyze image with AI. Please ensure good lighting and clear focus on affected plant parts.",
+        treatment: "Consult local agricultural extension officer • Take clearer photos • Check internet connection",
+        prevention: "Regular monitoring • Good photography practices • Stable internet connection"
+      };
       
-      if (error instanceof Error) {
-        if (error.message.includes("API_KEY")) {
-          errorMessage = "Invalid API key. Please check your Inflection API configuration.";
-        } else if (error.message.includes("quota")) {
-          errorMessage = "API quota exceeded. Please try again later.";
-        } else if (error.message.includes("network")) {
-          errorMessage = "Network error. Please check your internet connection.";
-        }
-      }
+      setAnalysisResult(fallbackResult);
       
       toast({
         title: "Analysis failed",
-        description: errorMessage,
+        description: "Using offline mode. Check your internet connection.",
         variant: "destructive",
       });
     } finally {
       setIsAnalyzing(false);
     }
+  };
+
+  // Parse AI response into structured format
+  const parseAnalysisResponse = (text: string): AnalysisResult => {
+    const lines = text.split('\n').filter(line => line.trim());
+    
+    let disease = "Unknown Condition";
+    let confidence = 50;
+    let severity = "Medium";
+    let description = "Analysis completed";
+    let treatment = "Consult agricultural expert";
+    let prevention = "Regular monitoring recommended";
+    
+    // Extract information from AI response
+    for (const line of lines) {
+      const lower = line.toLowerCase();
+      if (lower.includes('disease') || lower.includes('condition')) {
+        disease = line.replace(/^\d+\.\s*/, '').trim();
+      } else if (lower.includes('confidence')) {
+        const match = line.match(/(\d+)%?/);
+        if (match) confidence = parseInt(match[1]);
+      } else if (lower.includes('severity')) {
+        if (lower.includes('high')) severity = "High";
+        else if (lower.includes('low')) severity = "Low";
+        else if (lower.includes('none')) severity = "None";
+        else severity = "Medium";
+      } else if (lower.includes('description') || lower.includes('symptoms')) {
+        description = line.replace(/^\d+\.\s*/, '').replace(/description:?/i, '').trim();
+      } else if (lower.includes('treatment')) {
+        treatment = line.replace(/^\d+\.\s*/, '').replace(/treatment:?/i, '').trim();
+      } else if (lower.includes('prevention')) {
+        prevention = line.replace(/^\d+\.\s*/, '').replace(/prevention:?/i, '').trim();
+      }
+    }
+    
+    return { disease, confidence, severity, description, treatment, prevention };
   };
 
   // Format treatment and prevention strings to arrays
@@ -182,10 +238,10 @@ export const DiseaseDetection = () => {
             
             <Button 
               onClick={analyzeImage}
-              disabled={!selectedImage || isAnalyzing || !INFLECTION_API_KEY}
+              disabled={!selectedImage || isAnalyzing || !import.meta.env.VITE_GEMINI_API_KEY}
               className="w-full bg-green-600 hover:bg-green-700 text-sm sm:text-base py-2 sm:py-2.5"
             >
-              {isAnalyzing ? "Analyzing..." : !INFLECTION_API_KEY ? "API Not Configured" : "Analyze Image"}
+              {isAnalyzing ? "Analyzing..." : !import.meta.env.VITE_GEMINI_API_KEY ? "API Not Configured" : "Analyze Image"}
             </Button>
             
             <div className="text-xs sm:text-sm text-gray-600 space-y-1">
