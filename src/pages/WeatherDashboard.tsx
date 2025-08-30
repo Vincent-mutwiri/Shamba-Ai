@@ -143,6 +143,7 @@ export const WeatherDashboard = () => {
             value={selectedCounty} 
             onValueChange={setSelectedCounty}
             placeholder="Select county for weather"
+            showLocations={true}
           />
         </div>
       </div>
