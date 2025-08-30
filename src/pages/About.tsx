@@ -64,7 +64,7 @@ const About = () => {
               </div>
               <h1 className="text-4xl lg:text-5xl font-bold mb-6">About AgriSenti</h1>
               <p className="text-xl text-green-100 leading-relaxed">
-                Empowering Nakuru farmers with AI-driven solutions for smarter, more profitable farming. 
+                Empowering Kenyan farmers with AI-driven solutions for smarter, more profitable farming. 
                 We bridge the gap between traditional farming wisdom and modern technology.
               </p>
             </div>
@@ -84,7 +84,7 @@ const About = () => {
               <CardContent className="p-8">
                 <p className="text-gray-700 text-lg leading-relaxed">
                   To democratize access to agricultural expertise and market opportunities for 
-                  smallholder farmers in Nakuru County, using artificial intelligence to provide 
+                  smallholder farmers across Kenya, using artificial intelligence to provide 
                   personalized, actionable farming advice that increases yields and profits.
                 </p>
               </CardContent>
@@ -114,7 +114,7 @@ const About = () => {
             <div className="text-center mb-16">
               <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Our Story</h2>
               <p className="text-lg text-gray-600">
-                Born from the challenges faced by farmers in Nakuru County
+                Born from the challenges faced by farmers across Kenya
               </p>
             </div>
 
@@ -123,7 +123,7 @@ const About = () => {
                 <p className="text-gray-700 leading-relaxed">
                   AgriSenti was founded in 2024 by a team of agricultural experts, data scientists, 
                   and farmers who recognized the urgent need for accessible, localized farming advice 
-                  in Kenya.
+                  across Kenya's diverse agricultural regions.
                 </p>
                 
                 <p className="text-gray-700 leading-relaxed">
@@ -143,11 +143,11 @@ const About = () => {
                   <h3 className="font-semibold text-green-800 mb-2">Impact So Far</h3>
                   <div className="grid grid-cols-2 gap-4 text-center">
                     <div>
-                      <div className="text-2xl font-bold text-green-600">1,000+</div>
+                      <div className="text-2xl font-bold text-green-600">15,000+</div>
                       <div className="text-sm text-green-700">Farmers Served</div>
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-green-600">30%</div>
+                      <div className="text-2xl font-bold text-green-600">40%</div>
                       <div className="text-sm text-green-700">Average Yield Increase</div>
                     </div>
                   </div>
@@ -196,7 +196,7 @@ const About = () => {
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">Meet Our Team</h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Passionate experts dedicated to transforming agriculture in Kenya
+              Passionate experts dedicated to transforming agriculture across Kenya
             </p>
           </div>
 

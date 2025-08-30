@@ -1,12 +1,12 @@
-# Nakuru AgriSenti WebApp
+# AgriSenti WebApp
 
 ![AgriSenti Logo](public/agri.png)
 
 ## Project Overview
 
-AgriSenti is a comprehensive agricultural assistance web application designed specifically for farmers in Nakuru County, Kenya. The platform leverages modern technology to address key challenges faced by local farmers, including limited access to agricultural expertise, difficulty in identifying crop diseases, and lack of market information.
+AgriSenti is a comprehensive agricultural assistance web application designed for farmers across Kenya. The platform leverages modern technology to address key challenges faced by local farmers, including limited access to agricultural expertise, difficulty in identifying crop diseases, and lack of market information.
 
-Developed to bridge the information gap in Nakuru's agricultural sector, AgriSenti integrates multiple tools that help farmers optimize their agricultural practices, monitor crop health in real-time, track market prices for better decision-making, and receive personalized farming recommendations based on local conditions. The application is designed with a user-friendly interface that considers the varying technical literacy levels of farmers in the region.
+Developed to bridge the information gap in Kenya's agricultural sector, AgriSenti integrates multiple tools that help farmers optimize their agricultural practices, monitor crop health in real-time, track market prices for better decision-making, and receive personalized farming recommendations based on local conditions. The application is designed with a user-friendly interface that considers the varying technical literacy levels of farmers in the region.
 
 ## Features
 
@@ -14,9 +14,9 @@ Developed to bridge the information gap in Nakuru's agricultural sector, AgriSen
 
 An AI-powered virtual agricultural expert that provides:
 
-- **Personalized Farming Advice**: Tailored recommendations based on Nakuru's unique soil conditions, climate patterns, and local agricultural practices
+- **Personalized Farming Advice**: Tailored recommendations based on Kenya's diverse soil conditions, climate patterns, and regional agricultural practices
 - **Crop Management Guidance**: Step-by-step instructions for optimal crop care throughout the growing season
-- **Planting Schedules**: Customized planting calendars accounting for Nakuru's bimodal rainfall patterns
+- **Planting Schedules**: Customized planting calendars accounting for Kenya's diverse rainfall patterns across different regions
 - **Fertilizer Recommendations**: Soil-specific fertilizer advice to maximize yields while minimizing environmental impact
 - **Pest Management Strategies**: Integrated pest management techniques focusing on sustainable and affordable solutions
 - **Natural Language Interface**: Supports conversations in English and Swahili for maximum accessibility
@@ -26,7 +26,7 @@ An AI-powered virtual agricultural expert that provides:
 A sophisticated plant health monitoring system that:
 
 - **Analyzes Crop Images**: Uses computer vision algorithms to process uploaded photos of plant leaves, stems, and fruits
-- **Identifies 20+ Common Diseases**: Accurately detects prevalent diseases affecting maize, beans, potatoes, and other Nakuru staple crops
+- **Identifies 20+ Common Diseases**: Accurately detects prevalent diseases affecting maize, beans, potatoes, tea, coffee, sugarcane, and other Kenyan staple crops
 - **Diagnoses Nutrient Deficiencies**: Recognizes visual symptoms of specific mineral deficiencies in plants
 - **Provides Treatment Protocols**: Offers detailed, actionable treatment plans with both organic and conventional options
 - **Suggests Preventive Measures**: Recommends practices to avoid recurrence and spread
@@ -36,7 +36,7 @@ A sophisticated plant health monitoring system that:
 
 A comprehensive market intelligence platform that:
 
-- **Tracks Real-Time Crop Prices**: Monitors current selling prices across Nakuru's major agricultural markets
+- **Tracks Real-Time Crop Prices**: Monitors current selling prices across Kenya's major agricultural markets
 - **Analyzes Price Trends**: Visualizes historical price data with interactive charts to identify optimal selling periods
 - **Connects to Verified Buyers**: Provides direct links to pre-vetted agricultural buyers and processing companies
 - **Displays Quality Requirements**: Shows specific quality standards required by different buyers
@@ -47,7 +47,7 @@ A comprehensive market intelligence platform that:
 
 A specialized agricultural weather system that:
 
-- **Provides Hyperlocal Forecasts**: Offers micro-climate predictions specific to Nakuru's diverse topography
+- **Provides Hyperlocal Forecasts**: Offers micro-climate predictions specific to Kenya's diverse topography and climate zones
 - **Issues Early Weather Alerts**: Warns about incoming weather events that could impact farming operations
 - **Tracks Seasonal Patterns**: Analyzes rainfall distribution and temperature trends throughout the year
 - **Includes Agricultural Interpretation**: Translates weather data into specific farming recommendations
@@ -58,7 +58,7 @@ A specialized agricultural weather system that:
 
 A geospatial information system that:
 
-- **Visualizes Agricultural Data**: Maps out crop distribution, yield potential, and land utilization across Nakuru County
+- **Visualizes Agricultural Data**: Maps out crop distribution, yield potential, and land utilization across Kenya's 47 counties
 - **Locates Market Centers**: Shows the positions of trading centers with information on market days and specializations
 - **Identifies Extension Services**: Pinpoints locations of agricultural extension offices and input suppliers
 - **Maps Water Resources**: Displays water points, irrigation schemes, and water conservation structures
@@ -168,10 +168,10 @@ AgriSenti follows a modern client-server architecture designed for scalability a
 
 ```sh
 # Step 1: Clone the repository
-git clone https://github.com/yourusername/nakuru-agri-senti-webapp.git
+git clone https://github.com/yourusername/agri-senti-webapp.git
 
 # Step 2: Navigate to the project directory
-cd nakuru-agri-senti-webapp
+cd agri-senti-webapp
 
 # Step 3: Install dependencies
 npm install
@@ -243,7 +243,7 @@ VITE_ENABLE_ANALYTICS=false
 ## Project Structure
 
 ```text
-nakuru-agri-senti-webapp/
+agri-senti-webapp/
 ├── public/               # Static assets
 ├── src/
 │   ├── components/       # Reusable UI components
@@ -319,7 +319,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgments
 
-- **Nakuru County Agricultural Office** for domain expertise and data validation
+- **Kenya Agricultural and Livestock Research Organization (KALRO)** for domain expertise and data validation
 - **Local Farmer Cooperatives** for user testing and feedback
 - **Kenya Meteorological Department** for weather data integration
 - **The Agriculture and Food Authority (AFA)** for market price data

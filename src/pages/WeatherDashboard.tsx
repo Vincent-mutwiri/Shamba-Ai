@@ -5,6 +5,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage } from "@/components/FormattedMessage";
+import { CountySelector } from "@/components/CountySelector";
 
 export const WeatherDashboard = () => {
   // Initialize Gemini API with useMemo to prevent recreating on every render
@@ -20,6 +21,7 @@ export const WeatherDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [farmingInsight, setFarmingInsight] = useState("");
   const [insightError, setInsightError] = useState("");
+  const [selectedCounty, setSelectedCounty] = useState("nairobi");
   
   // Mock data for weather - we'll keep this since real weather API integration would be separate
   const weatherData = {
@@ -53,8 +55,9 @@ export const WeatherDashboard = () => {
 
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
       
+      const countyName = selectedCounty === 'all' ? 'Kenya' : selectedCounty.charAt(0).toUpperCase() + selectedCounty.slice(1).replace('-', ' ');
       const weatherSummary = `
-        Current weather in Nakuru: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
+        Current weather in ${countyName}: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
         Humidity: ${weatherData.current.humidity}%
         Wind Speed: ${weatherData.current.windSpeed} km/h
         Precipitation: ${weatherData.current.precipitation} mm
@@ -68,14 +71,14 @@ export const WeatherDashboard = () => {
       `;
       
       const prompt = `
-        You are an agricultural weather expert for Nakuru County, Kenya. 
+        You are an agricultural weather expert for Kenya. 
         
         **Format your response with clear structure using:**
         - Headings followed by colons (e.g., "Recommended Activities:")
         - Bullet points (•) for lists
         - Numbered steps for sequential actions
         
-        Based on the following weather data for Nakuru, provide practical farming advice:
+        Based on the following weather data for ${countyName}, provide practical farming advice:
         
         ${weatherSummary}
         
@@ -93,7 +96,7 @@ export const WeatherDashboard = () => {
         **Pest & Disease Risks:**
         - Potential threats that might increase in these conditions
         
-        Keep response under 200 words, practical, and specific to Nakuru's agricultural context.
+        Keep response under 200 words, practical, and specific to ${countyName}'s agricultural context and typical crops grown in this region.
       `;
       
       const result = await model.generateContent(prompt);
@@ -127,11 +130,20 @@ export const WeatherDashboard = () => {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
-        <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Weather Monitoring</h2>
-        <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500">
-          <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
-          <span>Last updated: Just now</span>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">Weather Monitoring</h2>
+          <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-500 mt-1">
+            <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
+            <span>Last updated: Just now</span>
+          </div>
+        </div>
+        <div className="w-full sm:w-64">
+          <CountySelector 
+            value={selectedCounty} 
+            onValueChange={setSelectedCounty}
+            placeholder="Select county for weather"
+          />
         </div>
       </div>
 

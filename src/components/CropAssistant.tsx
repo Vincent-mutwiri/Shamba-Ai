@@ -30,15 +30,15 @@ export const CropAssistant = () => {
       id: "1",
       text: `**Habari! Welcome to AgriSenti Assistant** 🌱
 
-I'm here to help you with farming in Nakuru County. I can assist with:
+I'm here to help you with farming across Kenya. I can assist with:
 
-• **Crop Management** - Planting schedules and care tips
-• **Fertilizer Recommendations** - Best products for your soil
-• **Pest & Disease Control** - Identification and treatment
-• **Weather Insights** - Current conditions and forecasts
-• **Market Information** - Prices and selling opportunities
+• **Crop Management** - Planting schedules and care tips for all 47 counties
+• **Fertilizer Recommendations** - Best products for your soil type and region
+• **Pest & Disease Control** - Identification and treatment across Kenya
+• **Weather Insights** - Current conditions and forecasts for your county
+• **Market Information** - Prices and selling opportunities nationwide
 
-**Ask me anything about farming!** What would you like to know today?`,
+**Ask me anything about farming!** What county are you farming in?`,
       sender: "bot",
       timestamp: new Date()
     }
@@ -205,9 +205,9 @@ I'm here to help you with farming in Nakuru County. I can assist with:
   };
 
   const quickQuestions = [
-    "What fertilizers work best for maize in Nakuru?",
+    "What fertilizers work best for maize in Kenya?",
     "How do I control fall armyworm in my crops?", 
-    "When is the best time to plant potatoes?",
+    "When is the best time to plant tea in Kericho?",
     "Current weather forecast for farming"
   ];
   

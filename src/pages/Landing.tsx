@@ -12,9 +12,9 @@ const Landing = () => {
     {
       icon: <Sprout className="w-8 h-8 text-green-600" />,
       title: "AI-Powered Crop Advisory",
-      description: "Get personalized farming recommendations based on your specific location, soil type, weather patterns, and crop varieties grown in Nakuru County.",
+      description: "Get personalized farming recommendations based on your specific location, soil type, weather patterns, and crop varieties grown across Kenya's 47 counties.",
       image: "https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400&h=300&fit=crop",
-      benefits: ["Localized advice for Nakuru", "Weather-based recommendations", "Soil analysis integration", "Seasonal planning"]
+      benefits: ["Localized advice for all counties", "Weather-based recommendations", "Soil analysis integration", "Seasonal planning"]
     },
     {
       icon: <Camera className="w-8 h-8 text-blue-600" />,
@@ -33,8 +33,8 @@ const Landing = () => {
   ];
 
   const stats = [
-    { number: "2,500+", label: "Active Farmers", icon: <Users className="w-6 h-6" /> },
-    { number: "12,000+", label: "Acres Managed", icon: <Globe className="w-6 h-6" /> },
+    { number: "15,000+", label: "Active Farmers", icon: <Users className="w-6 h-6" /> },
+    { number: "75,000+", label: "Acres Managed", icon: <Globe className="w-6 h-6" /> },
     { number: "85%", label: "Yield Increase", icon: <BarChart className="w-6 h-6" /> },
     { number: "4.9/5", label: "User Rating", icon: <Star className="w-6 h-6" /> }
   ];
@@ -42,25 +42,25 @@ const Landing = () => {
   const testimonials = [
     {
       name: "Mary Wanjiku",
-      location: "Njoro, Nakuru",
-      role: "Potato Farmer",
-      quote: "AgriSenti helped me increase my potato yield by 40% this season. The disease detection feature saved my entire crop from late blight.",
+      location: "Nyeri County",
+      role: "Coffee Farmer",
+      quote: "AgriSenti helped me increase my coffee yield by 40% this season. The disease detection feature saved my entire crop from coffee berry disease.",
       rating: 5,
       image: "https://images.unsplash.com/photo-1597393922738-085ea04b5a07?w=100&h=100&fit=crop&crop=face"
     },
     {
       name: "Peter Kiprotich",
-      location: "Molo, Nakuru", 
-      role: "Maize & Bean Farmer",
-      quote: "The market linkage feature connected me directly with buyers in Nairobi. I now get 25% better prices for my maize and beans.",
+      location: "Uasin Gishu County", 
+      role: "Maize & Wheat Farmer",
+      quote: "The market linkage feature connected me directly with buyers across Kenya. I now get 25% better prices for my maize and wheat.",
       rating: 5,
       image: "/assets/images/peter.avif"
     },
     {
       name: "Grace Muthoni",
-      location: "Naivasha, Nakuru",
+      location: "Kiambu County",
       role: "Greenhouse Farmer",
-      quote: "The AI advisory system recommended the perfect planting schedule. My tomato harvest timing is now perfectly aligned with market demand.",
+      quote: "The AI advisory system recommended the perfect planting schedule for my region. My tomato harvest timing is now perfectly aligned with market demand.",
       rating: 5,
       image: "/assets/images/grace.avif"
     }
@@ -134,7 +134,7 @@ const Landing = () => {
         </button>
         <div className="w-full flex justify-center items-center">
           <video
-            src="/Nakuru-Agri-SentiWebApp.mp4"
+            src="/Kenya-Agri-SentiWebApp.mp4"
             controls
             className="w-full h-auto rounded-lg mb-4 bg-black"
             style={{
@@ -168,16 +168,16 @@ const Landing = () => {
             <div className="space-y-6 md:space-y-8 text-center lg:text-left">
               <div className="space-y-4 md:space-y-6">
                 <Badge className="bg-green-100 text-green-800 hover:bg-green-100 inline-flex items-center gap-2 px-3 py-1.5 text-sm">
-                  🎉 Now serving 2,500+ farmers in Nakuru County
+                  🎉 Now serving 15,000+ farmers across Kenya
                 </Badge>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-green-800 leading-tight">
                   Smart Farming for
                   <span className="text-green-600 block lg:inline"> Modern </span>
-                  Nakuru Farmers
+                  Kenyan Farmers
                 </h1>
                 <p className="text-base md:text-lg lg:text-xl text-green-700 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Transform your farming with AI-powered crop advisory, instant disease detection, 
-                  and direct market access. Join thousands of farmers increasing their yields and profits with AgriSenti.
+                  and direct market access. Join thousands of farmers across Kenya increasing their yields and profits with AgriSenti.
                 </p>
               </div>
               
@@ -243,7 +243,7 @@ const Landing = () => {
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               See how AgriSenti transforms farming data into actionable insights. 
-              This interactive preview shows real farming scenarios from Nakuru County.
+              This interactive preview shows real farming scenarios from across Kenya.
             </p>
           </div>
           <div className="overflow-hidden rounded-2xl shadow-2xl">
@@ -261,7 +261,7 @@ const Landing = () => {
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
               Our comprehensive platform provides all the tools and insights you need 
-              to maximize your farming potential in Nakuru County.
+              to maximize your farming potential across Kenya's diverse agricultural regions.
             </p>
           </div>
 
@@ -306,7 +306,7 @@ const Landing = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12 md:mb-16">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight">
-              Trusted by Farmers Across Nakuru County
+              Trusted by Farmers Across Kenya
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600">
               See how AgriSenti is transforming lives and livelihoods
@@ -549,7 +549,7 @@ const Landing = () => {
               </div>
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4" />
-                <span>Join 2,500+ farmers</span>
+                <span>Join 15,000+ farmers</span>
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="w-4 h-4" />

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CountySelector } from "@/components/CountySelector";
 import { TrendingUp, TrendingDown, Phone, MessageSquare, MapPin } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -25,46 +26,46 @@ interface Buyer {
 }
 
 export const MarketDashboard = () => {
-  const [selectedLocation, setSelectedLocation] = useState("nakuru-town");
+  const [selectedCounty, setSelectedCounty] = useState("nairobi");
   const { toast } = useToast();
 
   const marketPrices: MarketPrice[] = [
-    { crop: "Maize", price: 38, unit: "per kg", change: 5.2, location: "Nakuru Town", quality: "Grade 1" },
-    { crop: "Beans", price: 95, unit: "per kg", change: -2.1, location: "Nakuru Town", quality: "Clean" },
-    { crop: "Potatoes", price: 45, unit: "per kg", change: 8.3, location: "Nakuru Town", quality: "Medium" },
-    { crop: "Wheat", price: 42, unit: "per kg", change: 3.7, location: "Nakuru Town", quality: "Grade 2" },
-    { crop: "Carrots", price: 35, unit: "per kg", change: -1.5, location: "Nakuru Town", quality: "Fresh" },
-    { crop: "Cabbages", price: 25, unit: "per kg", change: 12.1, location: "Nakuru Town", quality: "Fresh" },
+    { crop: "Maize", price: 38, unit: "per kg", change: 5.2, location: "Nairobi", quality: "Grade 1" },
+    { crop: "Beans", price: 95, unit: "per kg", change: -2.1, location: "Mombasa", quality: "Clean" },
+    { crop: "Potatoes", price: 45, unit: "per kg", change: 8.3, location: "Nakuru", quality: "Medium" },
+    { crop: "Tea", price: 180, unit: "per kg", change: 2.8, location: "Kericho", quality: "Grade A" },
+    { crop: "Coffee", price: 420, unit: "per kg", change: -3.2, location: "Nyeri", quality: "AA" },
+    { crop: "Sugarcane", price: 4.2, unit: "per kg", change: 1.5, location: "Kisumu", quality: "Fresh" },
   ];
 
   const buyers: Buyer[] = [
     {
-      name: "Nakuru Fresh Produce Ltd",
-      location: "Nakuru Town",
+      name: "Kenya Fresh Produce Ltd",
+      location: "Nairobi",
       crops: ["Maize", "Beans", "Potatoes"],
       phone: "+254712345678",
       rating: 4.8,
       priceRange: "KSh 35-45/kg"
     },
     {
-      name: "County Agricultural Co-op",
-      location: "Nakuru Central",
-      crops: ["Wheat", "Maize", "Beans"],
+      name: "East Africa Tea Co-op",
+      location: "Kericho",
+      crops: ["Tea", "Coffee"],
       phone: "+254723456789",
       rating: 4.6,
-      priceRange: "KSh 38-48/kg"
+      priceRange: "KSh 150-200/kg"
     },
     {
-      name: "Green Valley Traders",
-      location: "Njoro",
-      crops: ["Potatoes", "Carrots", "Cabbages"],
+      name: "Coastal Agri Traders",
+      location: "Mombasa",
+      crops: ["Coconuts", "Cashews", "Mangoes"],
       phone: "+254734567890",
       rating: 4.7,
-      priceRange: "KSh 30-40/kg"
+      priceRange: "KSh 40-80/kg"
     },
     {
-      name: "Farmers Choice Market",
-      location: "Naivasha Road",
+      name: "National Farmers Market",
+      location: "Kisumu",
       crops: ["All Crops"],
       phone: "+254745678901",
       rating: 4.5,
@@ -91,20 +92,15 @@ export const MarketDashboard = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-green-800">Market Prices</h2>
-          <p className="text-green-600 text-sm sm:text-base">Current prices in Nakuru County</p>
+          <p className="text-green-600 text-sm sm:text-base">Current prices across Kenya</p>
         </div>
         
-        <Select value={selectedLocation} onValueChange={setSelectedLocation}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Select location" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="nakuru-town">Nakuru Town</SelectItem>
-            <SelectItem value="njoro">Njoro</SelectItem>
-            <SelectItem value="naivasha">Naivasha</SelectItem>
-            <SelectItem value="molo">Molo</SelectItem>
-          </SelectContent>
-        </Select>
+        <CountySelector 
+          value={selectedCounty} 
+          onValueChange={setSelectedCounty}
+          placeholder="Filter by county"
+          className="w-full sm:w-48"
+        />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
@@ -144,7 +140,7 @@ export const MarketDashboard = () => {
             Direct Buyers
           </CardTitle>
           <p className="text-orange-100 text-xs sm:text-sm">
-            Connect directly with verified buyers in your area
+            Connect directly with verified buyers across Kenya
           </p>
         </CardHeader>
         
