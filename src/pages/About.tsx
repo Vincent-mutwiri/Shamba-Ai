@@ -137,7 +137,7 @@ const About = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <p className="text-gray-700 leading-relaxed">
-                  AgriSenti was founded in 2024 by a team of agricultural experts, data scientists, 
+                  AgriSenti was founded in 2025 by a team of agricultural experts, data scientists, 
                   and farmers who recognized the urgent need for accessible, localized farming advice 
                   across Kenya's diverse agricultural regions.
                 </p>
