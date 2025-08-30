@@ -1,132 +1,112 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ThermometerSun, Wind, Droplets, Sun, CloudRain, Clock, AlertTriangle } from "lucide-react";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormattedMessage } from "@/components/FormattedMessage";
 import { CountySelector } from "@/components/CountySelector";
+import { getWeatherByLocation } from "@/data/complete-weather-data";
 
 export const WeatherDashboard = () => {
-  // Initialize Gemini API with useMemo to prevent recreating on every render
-  const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-  const genAI = useMemo(() => {
-    if (!API_KEY) {
-      console.error("VITE_GEMINI_API_KEY is not configured");
-      return null;
-    }
-    return new GoogleGenerativeAI(API_KEY);
-  }, [API_KEY]);
+  const INFLECTION_API_KEY = import.meta.env.VITE_INFLECTION_API_KEY;
+  const INFLECTION_API_URL = 'https://api.inflection.ai/external/api/inference';
   
   const [loading, setLoading] = useState(false);
   const [farmingInsight, setFarmingInsight] = useState("");
   const [insightError, setInsightError] = useState("");
   const [selectedCounty, setSelectedCounty] = useState("nairobi");
+  const [selectedLocation, setSelectedLocation] = useState("");
   
-  // Mock data for weather - we'll keep this since real weather API integration would be separate
-  const weatherData = {
-    current: {
-      temperature: 24,
-      condition: "Partly Cloudy",
-      humidity: 65,
-      windSpeed: 12,
-      precipitation: 0,
-      uv: 5,
-    },
-    forecast: [
-      { day: "Today", temp: 24, icon: Sun },
-      { day: "Tomorrow", temp: 23, icon: CloudRain },
-      { day: "Wednesday", temp: 25, icon: Sun },
-      { day: "Thursday", temp: 22, icon: CloudRain },
-      { day: "Friday", temp: 24, icon: Sun },
-    ],
+  // Handle county change - reset location
+  const handleCountyChange = (county: string) => {
+    setSelectedCounty(county);
+    setSelectedLocation("");
   };
   
-  // Get farming insights based on weather data using Gemini API
-  const getFarmingInsights = useCallback(async () => {
-    setLoading(true);
-    setInsightError("");
-    
-    try {
-      if (!genAI) {
-        setInsightError("AI service is not properly configured. Please check your API key.");
-        return;
-      }
-
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      const countyName = selectedCounty === 'all' ? 'Kenya' : selectedCounty.charAt(0).toUpperCase() + selectedCounty.slice(1).replace('-', ' ');
-      const weatherSummary = `
-        Current weather in ${countyName}: ${weatherData.current.temperature}°C, ${weatherData.current.condition}
-        Humidity: ${weatherData.current.humidity}%
-        Wind Speed: ${weatherData.current.windSpeed} km/h
-        Precipitation: ${weatherData.current.precipitation} mm
-        
-        5-Day Forecast:
-        - Today: ${weatherData.forecast[0].temp}°C
-        - Tomorrow: ${weatherData.forecast[1].temp}°C
-        - Wednesday: ${weatherData.forecast[2].temp}°C
-        - Thursday: ${weatherData.forecast[3].temp}°C
-        - Friday: ${weatherData.forecast[4].temp}°C
-      `;
-      
-      const prompt = `
-        You are an agricultural weather expert for Kenya. 
-        
-        **Format your response with clear structure using:**
-        - Headings followed by colons (e.g., "Recommended Activities:")
-        - Bullet points (•) for lists
-        - Numbered steps for sequential actions
-        
-        Based on the following weather data for ${countyName}, provide practical farming advice:
-        
-        ${weatherSummary}
-        
-        **Provide specific recommendations about:**
-        
-        **Recommended Activities:**
-        - What farming activities are optimal in these conditions
-        
-        **Precautions:**
-        - Any safety measures farmers should take
-        
-        **Irrigation Advice:**
-        - Optimal watering schedule given the forecast
-        
-        **Pest & Disease Risks:**
-        - Potential threats that might increase in these conditions
-        
-        Keep response under 200 words, practical, and specific to ${countyName}'s agricultural context and typical crops grown in this region.
-      `;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      console.log("Weather AI Response:", text);
-      setFarmingInsight(text);
-    } catch (error: any) {
-      console.error("Error getting farming insights:", error);
-      
-      // Handle specific error types
-      if (error?.message?.includes('API_KEY_INVALID')) {
-        setInsightError("Invalid API key. Please check your configuration.");
-      } else if (error?.message?.includes('QUOTA_EXCEEDED')) {
-        setInsightError("AI service quota exceeded. Please try again later.");
-      } else if (error?.message?.includes('fetch')) {
-        setInsightError("Network error. Please check your internet connection.");
-      } else {
-        setInsightError("Failed to generate farming insights. Please try again later.");
-      }
-    } finally {
-      setLoading(false);
-    }
-  }, [genAI, weatherData]);
+  // Handle location change with debug
+  const handleLocationChange = (location: string) => {
+    console.log('Location changed to:', location);
+    setSelectedLocation(location);
+  };
   
-  // Get insights on initial load
+  // Get weather data based on selected location
+  const weatherData = useMemo(() => {
+    const locationKey = selectedLocation || "default";
+    const data = getWeatherByLocation(locationKey);
+    return {
+      current: data.current,
+      forecast: data.forecast.map(day => ({
+        ...day,
+        icon: day.condition === 'sunny' ? Sun : day.condition === 'rainy' ? CloudRain : Sun
+      }))
+    };
+  }, [selectedLocation]);
+  
+  // Generate farming insights based on weather conditions
+  const getFarmingInsights = useCallback(() => {
+    const locationName = selectedLocation || 'your area';
+    const temp = weatherData.current.temperature;
+    const condition = weatherData.current.condition;
+    const humidity = weatherData.current.humidity;
+    const wind = weatherData.current.windSpeed;
+    
+    let activities = [];
+    let precautions = [];
+    let irrigation = [];
+    let risks = [];
+    
+    // Temperature-based advice
+    if (temp > 30) {
+      activities.push('Early morning or late evening farming activities');
+      precautions.push('Protect workers from heat stress');
+      irrigation.push('Increase watering frequency');
+    } else if (temp < 18) {
+      activities.push('Midday farming when temperatures are warmer');
+      precautions.push('Protect sensitive crops from cold');
+      irrigation.push('Reduce watering to prevent root rot');
+    } else {
+      activities.push('Optimal conditions for most farming activities');
+      irrigation.push('Maintain regular watering schedule');
+    }
+    
+    // Condition-based advice
+    if (condition.toLowerCase().includes('rain')) {
+      activities.push('Harvest mature crops before heavy rains');
+      precautions.push('Ensure proper drainage in fields');
+      irrigation.push('Reduce or stop irrigation');
+      risks.push('Fungal diseases due to high moisture');
+    } else if (condition.toLowerCase().includes('sunny')) {
+      activities.push('Ideal for drying harvested crops');
+      irrigation.push('Monitor soil moisture closely');
+    }
+    
+    // Humidity-based advice
+    if (humidity > 80) {
+      risks.push('High disease pressure from humidity');
+      precautions.push('Improve air circulation around crops');
+    } else if (humidity < 50) {
+      irrigation.push('Increase watering due to low humidity');
+      precautions.push('Mulch to retain soil moisture');
+    }
+    
+    // Wind-based advice
+    if (wind > 20) {
+      precautions.push('Avoid spraying pesticides in high winds');
+      precautions.push('Stake tall crops to prevent damage');
+    }
+    
+    const insight = `**Weather-Based Farming Advice for ${locationName}:**\n\n**Current Conditions:** ${temp}°C, ${condition}, ${humidity}% humidity, ${wind} km/h wind\n\n**Recommended Activities:**\n${activities.map(a => `• ${a}`).join('\n')}\n\n**Precautions:**\n${precautions.map(p => `• ${p}`).join('\n')}\n\n**Irrigation Advice:**\n${irrigation.map(i => `• ${i}`).join('\n')}${risks.length > 0 ? `\n\n**Pest & Disease Risks:**\n${risks.map(r => `• ${r}`).join('\n')}` : ''}`;
+    
+    setFarmingInsight(insight);
+  }, [selectedLocation, weatherData]);
+  
+  // Get insights on load and location change
   useEffect(() => {
     getFarmingInsights();
   }, [getFarmingInsights]);
+
+
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -141,8 +121,10 @@ export const WeatherDashboard = () => {
         <div className="w-full sm:w-64">
           <CountySelector 
             value={selectedCounty} 
-            onValueChange={setSelectedCounty}
+            onValueChange={handleCountyChange}
             placeholder="Select county for weather"
+            showLocations={true}
+            onLocationChange={handleLocationChange}
           />
         </div>
       </div>

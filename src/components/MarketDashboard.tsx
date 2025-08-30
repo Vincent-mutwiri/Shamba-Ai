@@ -100,6 +100,7 @@ export const MarketDashboard = () => {
           onValueChange={setSelectedCounty}
           placeholder="Filter by county"
           className="w-full sm:w-48"
+          showLocations={true}
         />
       </div>
 
