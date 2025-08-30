@@ -154,26 +154,20 @@ I'm here to help you with farming across Kenya. I can assist with:
     }
   };
 
+
+
   const generateGeminiResponse = async (question: string): Promise<string> => {
     if (!genAI) {
       throw new Error("Gemini API not initialized");
     }
 
     try {
-      // Get the generative model (using stable version)
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      
-      // Create a structured prompt using the utility function
       const prompt = createStructuredPrompt(question, isMobile);
       
-      console.log("Sending prompt to Gemini:", prompt); // For debugging
-      
-      // Generate content using Gemini API
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
-      
-      console.log("Gemini response:", text); // For debugging
       
       if (!text || text.trim().length === 0) {
         throw new Error("Empty response from Gemini API");
