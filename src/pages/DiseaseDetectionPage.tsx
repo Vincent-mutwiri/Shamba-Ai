@@ -15,6 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DiseaseDetection } from "@/components/DiseaseDetection";
+import { EnhancedDiseaseDetection } from "@/components/EnhancedDiseaseDetection";
+import { TreatmentTracker } from "@/components/TreatmentTracker";
+import { CostEstimator } from "@/components/CostEstimator";
 import { LeafBlightInfo } from "@/components/LeafBlightInfo";
 
 const DiseaseDetectionPage = () => {
@@ -74,19 +77,43 @@ const DiseaseDetectionPage = () => {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid grid-cols-2 mb-6">
+        <TabsList className="grid grid-cols-5 mb-6">
           <TabsTrigger value="detection" className="gap-2">
             <Camera className="w-4 h-4" />
-            <span>Scan Disease</span>
+            <span>Scan</span>
+          </TabsTrigger>
+          <TabsTrigger value="enhanced" className="gap-2">
+            <Upload className="w-4 h-4" />
+            <span>Batch</span>
+          </TabsTrigger>
+          <TabsTrigger value="tracking" className="gap-2">
+            <AlertTriangle className="w-4 h-4" />
+            <span>Track</span>
+          </TabsTrigger>
+          <TabsTrigger value="costs" className="gap-2">
+            <Database className="w-4 h-4" />
+            <span>Costs</span>
           </TabsTrigger>
           <TabsTrigger value="library" className="gap-2">
-            <Database className="w-4 h-4" />
-            <span>Disease Library</span>
+            <BookOpen className="w-4 h-4" />
+            <span>Library</span>
           </TabsTrigger>
         </TabsList>
         
         <TabsContent value="detection" className="focus-visible:outline-none focus-visible:ring-0">
           <DiseaseDetection />
+        </TabsContent>
+        
+        <TabsContent value="enhanced" className="focus-visible:outline-none focus-visible:ring-0">
+          <EnhancedDiseaseDetection />
+        </TabsContent>
+        
+        <TabsContent value="tracking" className="focus-visible:outline-none focus-visible:ring-0">
+          <TreatmentTracker />
+        </TabsContent>
+        
+        <TabsContent value="costs" className="focus-visible:outline-none focus-visible:ring-0">
+          <CostEstimator />
         </TabsContent>
         
         <TabsContent value="library" className="focus-visible:outline-none focus-visible:ring-0">
