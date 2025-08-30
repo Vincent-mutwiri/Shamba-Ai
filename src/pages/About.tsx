@@ -27,7 +27,7 @@ const About = () => {
 
   const team = [
     {
-      name: "Fakii Mohammed",
+      name: "Vincent Mutwiri",
       role: "CEO",
       bio: "Visionary leader with extensive experience in educational technology and family-centered solutions.",
       expertise: "Leadership & Strategy",
@@ -35,7 +35,7 @@ const About = () => {
       useImage: true
     },
     {
-      name: "Andrew Ogembo", 
+      name: "Raphael Gitari", 
       role: "CTO",
       bio: "Technical architect specializing in AI systems and scalable educational platforms.",
       expertise: "AI & Technology",
@@ -43,7 +43,23 @@ const About = () => {
       useImage: false
     },
     {
-      name: "Chiboniso Nyoni",
+      name: "Ivy Tanui",
+      role: "User Experience Lead",
+      bio: "UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible.",
+      expertise: "User Experience",
+      icon: <UserCheck className="w-20 h-20 text-purple-600" />,
+      useImage: false
+    },
+    {
+      name: "Natalie Mumbi",
+      role: "User Experience Lead",
+      bio: "UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible.",
+      expertise: "User Experience",
+      icon: <UserCheck className="w-20 h-20 text-purple-600" />,
+      useImage: false
+    },
+    {
+      name: "Emmanuel Ngugi",
       role: "User Experience Lead",
       bio: "UX expert focused on creating intuitive, family-friendly interfaces that make learning accessible.",
       expertise: "User Experience",
