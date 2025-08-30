@@ -11,7 +11,7 @@ const About = () => {
     {
       icon: <Lightbulb className="w-8 h-8 text-yellow-500" />,
       title: "Innovation",
-      description: "We leverage cutting-edge AI and technology to solve real farming problems."
+      description: "We learn from our users and average cutting-edge AI and technology to solve real farming problems."
     },
     {
       icon: <Shield className="w-8 h-8 text-blue-500" />,
