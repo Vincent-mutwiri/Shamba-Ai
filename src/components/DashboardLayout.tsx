@@ -51,6 +51,7 @@ const sidebarItems = [
   { label: "Overview", icon: Home, path: "/dashboard" },
   { label: "Crop Assistant", icon: Sprout, path: "/dashboard/crop-assistant" },
   { label: "Disease Detection", icon: Scan, path: "/dashboard/disease-detection" },
+  { label: "Notifications", icon: Bell, path: "/dashboard/notifications" },
   { label: "Weather", icon: Cloud, path: "/dashboard/weather" },
   { label: "Market Prices", icon: TrendingUp, path: "/dashboard/market" },
   { label: "Help & Resources", icon: HelpCircle, path: "/dashboard/help" },

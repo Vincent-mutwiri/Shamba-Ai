@@ -5,7 +5,7 @@ import {
   Sprout, 
   Microscope, 
   BookOpen, 
-  Vial, 
+  TestTube, 
   ShieldAlert,
   CheckCircle,
   Info
@@ -66,7 +66,7 @@ export const LeafBlightInfo: React.FC = () => {
               className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-green-600 data-[state=active]:text-green-700 rounded-none py-3 text-gray-600"
             >
               <div className="flex items-center gap-2">
-                <Vial className="w-4 h-4" />
+                <TestTube className="w-4 h-4" />
                 <span>Treatment</span>
               </div>
             </TabsTrigger>
@@ -85,7 +85,7 @@ export const LeafBlightInfo: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center gap-2">
                 <div className="w-10 h-10 rounded-full flex items-center justify-center bg-amber-100">
-                  <Vial className="w-5 h-5 text-amber-600" />
+                  <TestTube className="w-5 h-5 text-amber-600" />
                 </div>
                 <h3 className="text-lg font-medium text-gray-900">Treatment Options</h3>
               </div>
