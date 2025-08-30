@@ -89,7 +89,7 @@ export const Footer = () => {
 
         <div className="border-t border-green-700 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center">
           <p className="text-green-100 text-sm sm:text-base">
-            © 2024 AgriSenti. All rights reserved. Empowering farmers for a sustainable future.
+            © 2025 AgriSenti. All rights reserved. Empowering farmers for a sustainable future.
           </p>
         </div>
       </div>
