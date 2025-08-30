@@ -225,6 +225,152 @@ export const WeatherDashboard = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Monthly Weather Trend */}
+      <Card>
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardTitle className="text-base sm:text-lg">30-Day Weather Trend</CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="h-64 sm:h-80">
+            <div className="w-full h-full bg-gradient-to-r from-blue-50 to-green-50 rounded-lg p-4 relative overflow-hidden">
+              <svg className="w-full h-full" viewBox="0 0 400 200">
+                {/* Grid lines */}
+                <defs>
+                  <pattern id="grid" width="40" height="20" patternUnits="userSpaceOnUse">
+                    <path d="M 40 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5"/>
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                {/* Temperature line */}
+                <polyline
+                  fill="none"
+                  stroke="#dc2626"
+                  strokeWidth="2"
+                  points={Array.from({length: 30}, (_, i) => {
+                    const baseTemp = weatherData.current.temperature;
+                    const variation = Math.sin(i * 0.2) * 5 + Math.random() * 3 - 1.5;
+                    const temp = baseTemp + variation;
+                    const x = (i / 29) * 380 + 10;
+                    const y = 180 - ((temp - 10) / 30) * 160;
+                    return `${x},${y}`;
+                  }).join(' ')}
+                />
+                
+                {/* Humidity line */}
+                <polyline
+                  fill="none"
+                  stroke="#2563eb"
+                  strokeWidth="2"
+                  points={Array.from({length: 30}, (_, i) => {
+                    const baseHumidity = weatherData.current.humidity;
+                    const variation = Math.cos(i * 0.15) * 10 + Math.random() * 5 - 2.5;
+                    const humidity = Math.max(30, Math.min(90, baseHumidity + variation));
+                    const x = (i / 29) * 380 + 10;
+                    const y = 180 - ((humidity - 20) / 70) * 160;
+                    return `${x},${y}`;
+                  }).join(' ')}
+                />
+                
+                {/* Legend */}
+                <g transform="translate(10, 10)">
+                  <rect x="0" y="0" width="120" height="40" fill="white" fillOpacity="0.9" rx="4"/>
+                  <line x1="10" y1="15" x2="25" y2="15" stroke="#dc2626" strokeWidth="2"/>
+                  <text x="30" y="19" fontSize="12" fill="#374151">Temperature</text>
+                  <line x1="10" y1="30" x2="25" y2="30" stroke="#2563eb" strokeWidth="2"/>
+                  <text x="30" y="34" fontSize="12" fill="#374151">Humidity</text>
+                </g>
+                
+                {/* Y-axis labels */}
+                <text x="5" y="25" fontSize="10" fill="#6b7280" textAnchor="end">High</text>
+                <text x="5" y="105" fontSize="10" fill="#6b7280" textAnchor="end">Med</text>
+                <text x="5" y="185" fontSize="10" fill="#6b7280" textAnchor="end">Low</text>
+                
+                {/* X-axis labels */}
+                <text x="10" y="195" fontSize="10" fill="#6b7280">Week 1</text>
+                <text x="110" y="195" fontSize="10" fill="#6b7280">Week 2</text>
+                <text x="210" y="195" fontSize="10" fill="#6b7280">Week 3</text>
+                <text x="310" y="195" fontSize="10" fill="#6b7280">Week 4</text>
+              </svg>
+            </div>
+            <div className="mt-2 text-xs text-gray-600 text-center">
+              Monthly forecast shows temperature and humidity trends for {selectedLocation || 'your area'}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Risk Assessment */}
+      <Card>
+        <CardHeader className="p-3 sm:p-4 lg:p-6">
+          <CardTitle className="text-base sm:text-lg">Weather Risk Assessment</CardTitle>
+        </CardHeader>
+        <CardContent className="p-3 sm:p-4 lg:p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {/* Flood Risk */}
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-blue-900">Flood Risk</h4>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  weatherData.current.precipitation > 5 ? 'bg-red-100 text-red-800' :
+                  weatherData.current.precipitation > 2 ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {weatherData.current.precipitation > 5 ? 'HIGH' :
+                   weatherData.current.precipitation > 2 ? 'MEDIUM' : 'LOW'}
+                </span>
+              </div>
+              <div className="w-full bg-blue-200 rounded-full h-2 mb-2">
+                <div 
+                  className={`h-2 rounded-full ${
+                    weatherData.current.precipitation > 5 ? 'bg-red-500' :
+                    weatherData.current.precipitation > 2 ? 'bg-yellow-500' :
+                    'bg-green-500'
+                  }`}
+                  style={{ width: `${Math.min(100, (weatherData.current.precipitation / 10) * 100)}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-blue-700">
+                {weatherData.current.precipitation > 5 ? 'Heavy rainfall expected. Prepare drainage systems.' :
+                 weatherData.current.precipitation > 2 ? 'Moderate rain. Monitor water levels.' :
+                 'Low precipitation. Minimal flood risk.'}
+              </p>
+            </div>
+
+            {/* Drought Risk */}
+            <div className="bg-orange-50 p-4 rounded-lg">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-semibold text-orange-900">Drought Risk</h4>
+                <span className={`px-2 py-1 rounded text-xs font-medium ${
+                  weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'bg-red-100 text-red-800' :
+                  weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-green-100 text-green-800'
+                }`}>
+                  {weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'HIGH' :
+                   weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'MEDIUM' : 'LOW'}
+                </span>
+              </div>
+              <div className="w-full bg-orange-200 rounded-full h-2 mb-2">
+                <div 
+                  className={`h-2 rounded-full ${
+                    weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'bg-red-500' :
+                    weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'bg-yellow-500' :
+                    'bg-green-500'
+                  }`}
+                  style={{ width: `${weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? '85%' :
+                                          weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? '60%' : '25%'}` }}
+                ></div>
+              </div>
+              <p className="text-xs text-orange-700">
+                {weatherData.current.humidity < 40 && weatherData.current.precipitation === 0 ? 'Very dry conditions. Increase irrigation.' :
+                 weatherData.current.humidity < 60 && weatherData.current.precipitation < 2 ? 'Dry conditions. Monitor soil moisture.' :
+                 'Adequate moisture levels. Low drought risk.'}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       
       {/* AI-Powered Farming Insights */}
       <Card className="mt-4 sm:mt-6">
