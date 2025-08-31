@@ -24,7 +24,7 @@ const Login = () => {
     setTimeout(() => {
       toast({
         title: "Login successful!",
-        description: "Welcome back to AgriSenti",
+        description: "Welcome back to Shamba AI",
       });
       navigate("/dashboard");
       setIsLoading(false);
@@ -43,7 +43,7 @@ const Login = () => {
           <div>
             <CardTitle className="text-2xl font-bold text-green-800">Welcome Back</CardTitle>
             <CardDescription className="text-green-600">
-              Sign in to your AgriSenti account
+              Sign in to your Shamba AI account
             </CardDescription>
           </div>
         </CardHeader>

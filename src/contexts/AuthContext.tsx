@@ -204,7 +204,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (event === AuthEvents.SIGNED_UP) {
           toast({
             title: "Account created successfully!",
-            description: "Welcome to AgriSenti. You can now start using our smart farming tools.",
+            description: "Welcome to Shamba AI. You can now start using our smart farming tools.",
           });
           
           // Flag to show profile completion dialog for new users
@@ -214,7 +214,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         } else if (event === AuthEvents.SIGNED_IN) {
           toast({
             title: "Welcome back!",
-            description: "Successfully signed in to AgriSenti.",
+            description: "Successfully signed in to Shamba AI.",
           });
         }
       }

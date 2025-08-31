@@ -27,7 +27,7 @@ export const Navbar = () => {
               <Sprout className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="font-bold text-green-800 text-base sm:text-lg truncate">AgriSenti</h2>
+              <h2 className="font-bold text-green-800 text-base sm:text-lg truncate">Shamba AI</h2>
               <p className="text-xs text-green-600 hidden sm:block truncate">Smart Farming Solutions</p>
             </div>
           </Link>

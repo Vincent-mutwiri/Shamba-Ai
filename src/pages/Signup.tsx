@@ -48,7 +48,7 @@ const Signup = () => {
     setTimeout(() => {
       toast({
         title: "Account created successfully!",
-        description: "Welcome to AgriSenti. You can now start using our smart farming tools.",
+        description: "Welcome to Shamba AI. You can now start using our smart farming tools.",
       });
       navigate("/dashboard");
       setIsLoading(false);
@@ -65,7 +65,7 @@ const Signup = () => {
             </div>
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold text-green-800">Join AgriSenti</CardTitle>
+            <CardTitle className="text-2xl font-bold text-green-800">Join Shamba AI</CardTitle>
             <CardDescription className="text-green-600">
               Create your account and start smart farming today
             </CardDescription>

@@ -78,7 +78,7 @@ const About = () => {
               <div className="bg-white/20 p-4 rounded-full w-20 h-20 mx-auto mb-6 flex items-center justify-center">
                 <Sprout className="w-10 h-10" />
               </div>
-              <h1 className="text-4xl lg:text-5xl font-bold mb-6">About AgriSenti</h1>
+              <h1 className="text-4xl lg:text-5xl font-bold mb-6">About Shamba AI</h1>
               <p className="text-xl text-green-100 leading-relaxed">
                 Empowering Kenyan farmers with AI-driven solutions for smarter, more profitable farming. 
                 We bridge the gap between traditional farming wisdom and modern technology.
@@ -137,7 +137,7 @@ const About = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               <div className="space-y-6">
                 <p className="text-gray-700 leading-relaxed">
-                  AgriSenti was founded in 2025 by a team of agricultural experts, data scientists, 
+                  Shamba AI was founded in 2025 by a team of agricultural experts, data scientists, 
                   and farmers who recognized the urgent need for accessible, localized farming advice 
                   across Kenya's diverse agricultural regions.
                 </p>

@@ -34,7 +34,7 @@ export const Header = () => {
               <Sprout className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
             </div>
             <div className="min-w-0">
-              <h2 className="font-bold text-green-800 text-sm sm:text-base lg:text-lg tracking-tight truncate">AgriSenti</h2>
+              <h2 className="font-bold text-green-800 text-sm sm:text-base lg:text-lg tracking-tight truncate">Shamba AI</h2>
               <p className="text-xs lg:text-sm text-green-600 hidden sm:block truncate">Smart Farming Platform</p>
             </div>
           </Link>
@@ -54,7 +54,7 @@ export const Header = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Get help with AgriSenti dashboard and features</DropdownMenuLabel>
+              <DropdownMenuLabel>Get help with Shamba AI dashboard and features</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer" asChild>
                 <Link to="/dashboard/help?tab=tutorials">

@@ -158,7 +158,7 @@ const Auth = () => {
           </div>
           <div>
             <h1 className="text-3xl lg:text-4xl font-bold text-green-800 mb-4">
-              Welcome to AgriSenti
+              Welcome to Shamba AI
             </h1>
             <p className="text-lg text-green-700 mb-6">
               Your smart farming companion for better yields, disease detection, and market access across Kenya.
@@ -193,7 +193,7 @@ const Auth = () => {
         <Card className="shadow-2xl border-0 bg-white/95 backdrop-blur-sm">
           <CardHeader className="text-center pb-4">
             <CardTitle className="text-2xl font-bold text-green-800">
-              {activeTab === "login" ? "Welcome Back" : "Join AgriSenti"}
+              {activeTab === "login" ? "Welcome Back" : "Join Shamba AI"}
             </CardTitle>
             <CardDescription className="text-green-600">
               {activeTab === "login" 

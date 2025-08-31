@@ -18,10 +18,10 @@ interface Message {
 export const AIChatbot: React.FC = () => {
   // State
   const [messages, setMessages] = useState<Message[]>(() => {
-    const savedMessages = localStorage.getItem('agrisenti-chat-history');
+    const savedMessages = localStorage.getItem('shambaai-chat-history');
     return savedMessages ? JSON.parse(savedMessages) : [{
       role: 'model',
-      content: `**Hello! I'm your AgriSenti AI Assistant** 🌾
+      content: `**Hello! I'm your Shamba AI Assistant** 🌾
 
 I'm here to help you with:
 
@@ -50,7 +50,7 @@ I'm here to help you with:
   // Save messages to localStorage
   useEffect(() => {
     try {
-      localStorage.setItem('agrisenti-chat-history', JSON.stringify(messages));
+      localStorage.setItem('shambaai-chat-history', JSON.stringify(messages));
     } catch (error) {
       console.error('Error saving chat history:', error);
     }
@@ -244,7 +244,7 @@ I'm here to help you with:
                 </svg>
               </div>
               <div>
-                <h2 className="text-lg font-semibold">AgriSenti Assistant</h2>
+                <h2 className="text-lg font-semibold">Shamba AI Assistant</h2>
                 <p className="text-xs text-gray-500">AI-powered farming insights</p>
               </div>
             </div>

@@ -97,7 +97,7 @@ const Contact = () => {
           <div className="max-w-3xl mx-auto text-center">
             <h1 className="text-4xl lg:text-5xl font-bold mb-6">Contact Us</h1>
             <p className="text-xl text-green-100 leading-relaxed">
-              Have questions about AgriSenti? We're here to help you succeed. 
+              Have questions about Shamba AI? We're here to help you succeed. 
               Reach out and let's discuss how we can support your farming journey.
             </p>
           </div>
@@ -280,14 +280,14 @@ const Contact = () => {
               </div>
               <h2 className="text-3xl font-bold text-gray-900 mb-6">Frequently Asked Questions</h2>
               <p className="text-lg text-gray-600">
-                Find answers to the most common questions about AgriSenti and our smart farming solutions
+                Find answers to the most common questions about Shamba AI and our smart farming solutions
               </p>
             </div>
 
             <Accordion type="single" collapsible className="space-y-4">
               <AccordionItem value="item-1" className="bg-white border-0 shadow-lg rounded-lg">
                 <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg text-left">
-                  Is AgriSenti free to use?
+                  Is Shamba AI free to use?
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-gray-600">
                   Yes, we offer a free tier with basic features including crop advisory and weather updates. Premium features like advanced disease detection, market price alerts, and direct buyer connections are available through our affordable subscription plans starting at KES 500 per month.
@@ -305,7 +305,7 @@ const Contact = () => {
 
               <AccordionItem value="item-3" className="bg-white border-0 shadow-lg rounded-lg">
                 <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg text-left">
-                  Can I use AgriSenti offline?
+                  Can I use Shamba AI offline?
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-gray-600">
                   Yes, our mobile app works offline for basic features including previously downloaded crop advice, disease identification guides, and farming calendar. New recommendations and real-time market prices require internet connection, but data syncs automatically when you reconnect.
@@ -323,7 +323,7 @@ const Contact = () => {
 
               <AccordionItem value="item-5" className="bg-white border-0 shadow-lg rounded-lg">
                 <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg text-left">
-                  What crops does AgriSenti support?
+                  What crops does Shamba AI support?
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-gray-600">
                   We support all major crops grown in Nakuru County including maize, beans, potatoes, tomatoes, onions, cabbage, carrots, wheat, barley, and various fruits. We're continuously adding support for more crops based on farmer requests. Our system covers crop varieties, planting seasons, pest management, and harvest optimization.
@@ -344,13 +344,13 @@ const Contact = () => {
                   What languages are supported?
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-gray-600">
-                  AgriSenti is available in English and Kiswahili. We're working on adding Kikuyu and Kalenjin language support. All training materials, app interface, and customer support are available in both English and Kiswahili to ensure accessibility for all farmers in the region.
+                  Shamba AI is available in English and Kiswahili. We're working on adding Kikuyu and Kalenjin language support. All training materials, app interface, and customer support are available in both English and Kiswahili to ensure accessibility for all farmers in the region.
                 </AccordionContent>
               </AccordionItem>
 
               <AccordionItem value="item-8" className="bg-white border-0 shadow-lg rounded-lg">
                 <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 rounded-lg text-left">
-                  How do I get started with AgriSenti?
+                  How do I get started with Shamba AI?
                 </AccordionTrigger>
                 <AccordionContent className="px-6 pb-4 text-gray-600">
                   Getting started is easy! Simply sign up on our website or download our mobile app, complete your farm profile with details about your location and crops, and start receiving personalized recommendations immediately. New users get a 30-day free trial of premium features and a welcome call from our support team.

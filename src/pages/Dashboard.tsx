@@ -219,7 +219,7 @@ const Dashboard = () => {
                 </div>
                 <div className="hidden sm:block">
                   <h1 className="text-xl font-bold bg-gradient-to-r from-green-800 to-emerald-700 bg-clip-text text-transparent">
-                    AgriSenti
+                    Shamba AI
                   </h1>
                   <p className="text-xs text-green-600">Smart Farming Platform</p>
                 </div>
@@ -243,7 +243,7 @@ const Dashboard = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel>Get help with AgriSenti dashboard and features</DropdownMenuLabel>
+                  <DropdownMenuLabel>Get help with Shamba AI dashboard and features</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem className="cursor-pointer" onClick={() => navigate("/dashboard/help?tab=tutorials")}>
                     <BookOpen className="w-4 h-4 mr-2" />
@@ -447,7 +447,7 @@ const Dashboard = () => {
                   <p className="text-xs text-green-100">Get advanced analytics, AI predictions, and market insights.</p>
                   <Button 
                     className="w-full bg-white text-green-800 hover:bg-green-50 font-medium shadow-md"
-                    onClick={() => window.open('https://agrisenti.com/pricing', '_blank')}
+                    onClick={() => window.open('https://shambaai.com/pricing', '_blank')}
                   >
                     Upgrade Now
                   </Button>

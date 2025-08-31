@@ -96,7 +96,7 @@ const Features = () => {
               Revolutionary Farming Features
             </h1>
             <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
-              Discover how AgriSenti is transforming agriculture in Kenya with cutting-edge technology, 
+              Discover how Shamba AI is transforming agriculture in Kenya with cutting-edge technology, 
               AI-powered insights, and comprehensive farming solutions.
             </p>
           </div>
@@ -223,7 +223,7 @@ const Features = () => {
               Ready to Transform Your Farm?
             </h2>
             <p className="text-base md:text-lg lg:text-xl mb-6 md:mb-8 opacity-90 leading-relaxed">
-              Join thousands of farmers already using AgriSenti to increase yields, 
+              Join thousands of farmers already using Shamba AI to increase yields, 
               reduce costs, and build sustainable farming practices.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">

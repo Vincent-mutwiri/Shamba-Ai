@@ -14,12 +14,12 @@ export const Footer = () => {
                 <Sprout className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-bold text-base sm:text-lg">AgriSenti</h3>
+                <h3 className="font-bold text-base sm:text-lg">Shamba AI</h3>
                 <p className="text-green-200 text-xs sm:text-sm">Smart Farming Solutions</p>
               </div>
             </div>
             <p className="text-green-100 text-sm sm:text-base leading-relaxed">
-              Empowering Nakuru farmers with AI-driven crop advisory, disease detection, 
+              Empowering Kenyan farmers with AI-driven crop advisory, disease detection, 
               and direct market access for better yields and profits.
             </p>
           </div>
@@ -60,15 +60,15 @@ export const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-start gap-2 text-green-100">
                 <MapPin className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span className="text-sm sm:text-base">Nakuru County, Kenya</span>
+                <span className="text-sm sm:text-base">Ihub, Kenya</span>
               </div>
               <div className="flex items-center gap-2 text-green-100">
                 <Phone className="w-4 h-4 flex-shrink-0" />
-                <span className="text-sm sm:text-base">+254 741 140 250</span>
+                <span className="text-sm sm:text-base">+254 715279851</span>
               </div>
               <div className="flex items-start gap-2 text-green-100">
                 <Mail className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span className="text-sm sm:text-base break-all">fakiiahmad001@gmail.com</span>
+                <span className="text-sm sm:text-base break-all">Vincentmutwiri9@gmail.com</span>
               </div>
             </div>
             
@@ -89,7 +89,7 @@ export const Footer = () => {
 
         <div className="border-t border-green-700 mt-6 sm:mt-8 pt-6 sm:pt-8 text-center">
           <p className="text-green-100 text-sm sm:text-base">
-            © 2025 AgriSenti. All rights reserved. Empowering farmers for a sustainable future.
+            © 2025 Shamba AI. All rights reserved. Empowering farmers for a sustainable future.
           </p>
         </div>
       </div>

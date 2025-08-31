@@ -227,7 +227,7 @@ const FeatureDetail = () => {
               Explore Other Features
             </h2>
             <p className="text-lg text-gray-600">
-              Discover more ways AgriSenti can transform your farming experience
+              Discover more ways Shamba AI can transform your farming experience
             </p>
           </div>
 
@@ -289,7 +289,7 @@ const FeatureDetail = () => {
               Ready to Get Started with {currentFeature.title}?
             </h2>
             <p className="text-xl opacity-90">
-              Join thousands of farmers already using AgriSenti to increase yields, 
+              Join thousands of farmers already using Shamba AI to increase yields, 
               reduce costs, and build sustainable farming practices.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">

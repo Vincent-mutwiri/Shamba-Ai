@@ -44,7 +44,7 @@ const Landing = () => {
       name: "Mary Wanjiku",
       location: "Nyeri County",
       role: "Coffee Farmer",
-      quote: "AgriSenti helped me increase my coffee yield by 40% this season. The disease detection feature saved my entire crop from coffee berry disease.",
+      quote: "Shamba AI helped me increase my coffee yield by 40% this season. The disease detection feature saved my entire crop from coffee berry disease.",
       rating: 5,
       image: "https://images.unsplash.com/photo-1597393922738-085ea04b5a07?w=100&h=100&fit=crop&crop=face"
     },
@@ -177,7 +177,7 @@ const Landing = () => {
                 </h1>
                 <p className="text-base md:text-lg lg:text-xl text-green-700 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                   Transform your farming with AI-powered crop advisory, instant disease detection, 
-                  and direct market access. Join thousands of farmers across Kenya increasing their yields and profits with AgriSenti.
+                  and direct market access. Join thousands of farmers across Kenya increasing their yields and profits with Shamba AI.
                 </p>
               </div>
               
@@ -242,7 +242,7 @@ const Landing = () => {
               Experience Your Future Farm Dashboard
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              See how AgriSenti transforms farming data into actionable insights. 
+              See how Shamba AI transforms farming data into actionable insights. 
               This interactive preview shows real farming scenarios from across Kenya.
             </p>
           </div>
@@ -309,7 +309,7 @@ const Landing = () => {
               Trusted by Farmers Across Kenya
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-gray-600">
-              See how AgriSenti is transforming lives and livelihoods
+              See how Shamba AI is transforming lives and livelihoods
             </p>
           </div>
 
@@ -481,7 +481,7 @@ const Landing = () => {
             <div className="space-y-6 md:space-y-8 order-1 lg:order-2">
               <div>
                 <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 md:mb-4 leading-tight">
-                  Why Farmers Choose AgriSenti
+                  Why Farmers Choose Shamba AI
                 </h2>
                 <p className="text-base md:text-lg lg:text-xl text-gray-600">
                   Join thousands of farmers who have transformed their farming 
@@ -524,7 +524,7 @@ const Landing = () => {
               Ready to Transform Your Farming?
             </h2>
             <p className="text-base md:text-lg lg:text-xl text-green-100 leading-relaxed">
-              Join AgriSenti today and start getting personalized farming advice, 
+              Join Shamba AI today and start getting personalized farming advice, 
               disease detection, and better market access. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">

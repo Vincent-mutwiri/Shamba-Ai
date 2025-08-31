@@ -19,7 +19,7 @@ export const Help = () => {
     <div className="container mx-auto max-w-4xl space-y-6">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Help & Resources</h1>
-        <p className="text-gray-500 mt-2">Get help with AgriSenti dashboard and features</p>
+        <p className="text-gray-500 mt-2">Get help with Shamba AI dashboard and features</p>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -44,10 +44,10 @@ export const Help = () => {
                   </div>
                   Getting Started
                 </CardTitle>
-                <CardDescription>Learn the basics of AgriSenti platform</CardDescription>
+                <CardDescription>Learn the basics of Shamba AI platform</CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-gray-500 mb-4">This guide walks you through the key features and navigation of the AgriSenti platform.</p>
+                <p className="text-sm text-gray-500 mb-4">This guide walks you through the key features and navigation of the Shamba AI platform.</p>
                 <div className="aspect-video bg-gray-100 rounded-md flex items-center justify-center mb-3">
                   <Video className="h-10 w-10 text-gray-400" />
                 </div>
@@ -221,7 +221,7 @@ export const Help = () => {
                 <p className="text-sm text-gray-600 mt-2">Our AI model is trained on thousands of images with 90%+ accuracy. Take clear photos in good lighting for best results.</p>
               </div>
               <div className="p-3 border border-gray-200 rounded-lg">
-                <h3 className="font-medium">Can I use AgriSenti offline?</h3>
+                <h3 className="font-medium">Can I use Shamba AI offline?</h3>
                 <p className="text-sm text-gray-600 mt-2">Some features work offline, but synchronization and AI features require an internet connection.</p>
               </div>
             </CardContent>

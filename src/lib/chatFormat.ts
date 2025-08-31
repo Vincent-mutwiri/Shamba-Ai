@@ -140,7 +140,7 @@ export function createStructuredPrompt(userInput: string, context: string = 'gen
   
   switch (context) {
     case 'crop-assistant':
-      contextInstruction = `You are a specialized crop assistant for AgriSenti, focusing on farming advice for Kenya.
+      contextInstruction = `You are a specialized crop assistant for Shamba AI, focusing on farming advice for Kenya.
 
 Provide practical, actionable advice for:
 - Crop management and planting schedules
@@ -153,7 +153,7 @@ Provide practical, actionable advice for:
 Always consider Kenya's diverse climate zones (highlands, coastal, arid, semi-arid) and farming systems.`;
       break;
     case 'weather':
-      contextInstruction = `You are a weather and farming advisor for AgriSenti, specializing in agricultural meteorology for Kenya.
+      contextInstruction = `You are a weather and farming advisor for Shamba AI, specializing in agricultural meteorology for Kenya.
 
 Provide weather-based farming insights including:
 - Current weather impact on farming activities
@@ -164,7 +164,7 @@ Provide weather-based farming insights including:
 - Optimal timing for field operations`;
       break;
     default:
-      contextInstruction = `You are an AI assistant for AgriSenti, specializing in agricultural topics for Kenya.`;
+      contextInstruction = `You are an AI assistant for Shamba AI, specializing in agricultural topics for Kenya.`;
   }
   
   return `${contextInstruction}

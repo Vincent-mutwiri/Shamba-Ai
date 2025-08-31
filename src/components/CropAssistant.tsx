@@ -28,7 +28,7 @@ export const CropAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: `**Habari! Welcome to AgriSenti Assistant** 🌱
+      text: `**Habari! Welcome to Shamba AI Assistant** 🌱
 
 I'm here to help you with farming across Kenya. I can assist with:
 

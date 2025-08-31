@@ -61,7 +61,7 @@ export const ProfileCompletionDialog: React.FC<ProfileCompletionDialogProps> = (
         <DialogHeader>
           <DialogTitle>Complete Your Profile</DialogTitle>
           <DialogDescription>
-            Tell us more about yourself to get the most out of AgriSenti.
+            Tell us more about yourself to get the most out of Shamba AI.
           </DialogDescription>
         </DialogHeader>
         
